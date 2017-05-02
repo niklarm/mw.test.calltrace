@@ -1,0 +1,39 @@
+/**
+ * @file   mw/test/calltrace.def
+ * @date   01.05.2017
+ * @author Klemens D. Morgenstern
+ *
+ * Published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+  <pre>
+    /  /|  (  )   |  |  /
+   /| / |   \/    | /| /
+  / |/  |   /\    |/ |/
+ /  /   |  (  \   /  |
+               )
+ </pre>
+
+ */
+
+struct mw_calltrace_
+{
+    const void * fn;
+    
+    const void ** content;
+    const int content_size;
+    
+    const int repeat;
+    const int skip;
+        
+	int to_skip;
+    int errored;
+    int repeated;
+    int current_position;
+    int start_depth;
+        	
+};
+
+int mw_timestamp_tic()         __attribute__((no_instrument_function));
+const char* mw_timestamp_str() __attribute__((no_instrument_function));
+
+int __mw_set_calltrace  (struct mw_calltrace_ * ct) __attribute__((no_instrument_function));
+int __mw_reset_calltrace(struct mw_calltrace_ * ct) __attribute__((no_instrument_function));

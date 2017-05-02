@@ -1,0 +1,5 @@
+#if defined(__cplusplus)
+#include <mw/test/calltrace.hpp>
+#else
+#include <mw/test/calltrace.h>
+#endif

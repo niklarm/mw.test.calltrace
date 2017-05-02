@@ -1,0 +1,16 @@
+
+import modules ;
+
+project calltrace :
+	source-location src	
+	: requirements
+    <include>../dbg-runner/include
+	<include>./include
+	<toolset>gcc:<cxxflags>-std=gnu++1y
+	<toolset>gcc:<cxxflags>-ftemplate-depth=512
+	;
+	
+
+
+lib calltrace-impl : calltrace.c : <link>static ; 
+

@@ -1,0 +1,54 @@
+env:
+  global:
+  - BRANCH_TO_TEST=$TRAVIS_BRANCH
+  matrix:
+  #- ADDRESS_MODEL=32
+  - ADDRESS_MODEL=64
+language: cpp
+compiler:
+- gcc
+os:
+- linux
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - python-yaml
+    - gcc-6
+    - g++-6
+    - gdb
+before_script:
+    - PROJECT_TO_TEST=`basename $TRAVIS_BUILD_DIR`
+    - cd $HOME
+    - wget -O boost_1_64_0.tar.gz https://dl.bintray.com/boostorg/beta/1.64.0.rc.1/source/boost_1_64_0_rc1.tar.gz
+    - tar -xf boost_1_64_0.tar.gz > /dev/null
+    - BOOST=$HOME/boost_1_64_0
+    - cd $BOOST
+    - "./bootstrap.sh"
+    - "./b2 headers"
+    - cd $TRAVIS_BUILD_DIR
+    - MW_TEST=$HOME/mw.test
+    - git init $MW_TEST
+    - cd $MW_TEST
+    - if [ $BRANCH_TO_TEST = "master" ]; then
+      MW_BRANCH=master; 
+      else MW_BRANCH=develop; fi
+    - git remote add --no-tags -t $MW_BRANCH origin https://github.com/mw-sc/mw.test.git
+    - git fetch --depth=1
+    - git checkout $MW_BRANCH
+    - git submodule update --init --merge
+    - git remote set-branches --add origin $MW_BRANCH
+    - git pull --recurse-submodules
+    - git submodule update --init
+    - git checkout $MW_BRANCH
+    - git submodule foreach "git reset --quiet --hard; git clean -fxd"
+    - git reset --hard; git clean -fxd
+    - git status
+    - echo "Removing mw.calltrace"
+    - rm -rf $MW_TEST/calltrace
+    - mv $TRAVIS_BUILD_DIR/../$PROJECT_TO_TEST $MW_TEST/calltrace
+    - cp user-config.travis.jam user-config.jam
+    - cd ./calltrace/test
+script:
+- $BOOST/b2 -sBOOST_ROOT=$BOOST define=MW_TRAVISCI_BUILD toolset=gcc-6 linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=. -j4 address-model=$ADDRESS_MODEL
