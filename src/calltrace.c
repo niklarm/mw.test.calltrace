@@ -153,11 +153,10 @@ int __mw_reset_calltrace(struct mw_calltrace_ * ct)
     int i = 0;
     for (i = 0; i < (sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ *)); i++)
     {
-        if (calltrace_stack[i] == 0)
+        if (calltrace_stack[i] == ct)
         {
-            calltrace_stack[i] =0;
+            calltrace_stack[i] = 0;
             calltrace_size --;
-
             return 1;
         }
     }

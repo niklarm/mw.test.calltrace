@@ -12,5 +12,5 @@ alias boost_moni : /boost//prg_exec_monitor    ;
 
 exe test-cpp : test-cpp.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <library>boost_test <library>boost_moni <library>..//calltrace-impl ;
 
-
-run test-cpp : : : : test-cpp-run ;
+run overload.cpp : : : <library>boost_test <library>boost_moni ;
+run test-cpp     : : : : test-cpp-run ;
