@@ -62,7 +62,7 @@ void __mw_calltrace_enter(void * this_fn)
             cnt++;
             struct mw_calltrace_ *ct = calltrace_stack[i];
 
-            if ((ct->start_depth == 0) //inactive
+            if ((ct->start_depth == -1) //inactive
              && (ct->fn == this_fn) //that's my function
              && ((ct->repeat > ct->repeated) || (ct->repeat == 0) )) //not repeated to often
             {
@@ -104,7 +104,7 @@ void __mw_calltrace_exit (void * this_fn)
             struct mw_calltrace_ *ct = calltrace_stack[i];
             if (ct->start_depth == depth)
             {
-                ct->start_depth = 0;
+                ct->start_depth = -1;
 
                 if (ct->current_position != ct->content_size)
                     ct->errored = 1;
@@ -139,8 +139,6 @@ int __mw_set_calltrace(struct mw_calltrace_ * ct)
         {
             calltrace_stack[i] = ct;
             calltrace_size ++;
-            //and now init it
-
             break;
         }
     }

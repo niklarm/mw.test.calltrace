@@ -561,7 +561,7 @@ class calltrace : mw_calltrace_
 public:
     template<typename Func, typename ...Args>
     inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, int skip, Args ... args)
-        : mw_calltrace_{detail::func_cast(func), _funcs, static_cast<int>(Size), repeat, skip, skip, 0, 0, 0, 0},
+        : mw_calltrace_{detail::func_cast(func), _funcs, static_cast<int>(Size), repeat, skip, skip, 0, 0, 0, -1},
           _funcs{detail::func_cast(args)...},
           _inited{__mw_set_calltrace(this) != 0}
     {

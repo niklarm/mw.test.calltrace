@@ -19,25 +19,31 @@
 
 #include <mw/test/calltrace.def>
 
-typedef mw_calltrace_ mw_calltrace;
+typedef struct mw_calltrace_ mw_calltrace;
 
-static int mw_init_calltrace(mw_calltrace * ct)
+static int mw_calltrace_init(mw_calltrace * ct)
 {
     ct->to_skip = ct->skip;
     ct->errored = 0;
     ct->repeated = 0;
     ct->current_position = 0;
-    ct->start_depth = 0;
+    ct->start_depth = -1;
+
     return __mw_set_calltrace(ct);
 }
 
-static int mw_complete(mw_calltrace * ct)
+static int mw_calltrace_complete(mw_calltrace * ct)
 {
-    return ct->current_position == 0;
+    int rep_res = ct->repeat == 0 ? (ct->repeated > 0 ) : (ct->repeated >= ct->repeat);
+    return (ct->current_position == 0) && rep_res;
 }
-static int mw_success (mw_calltrace * ct) {return mw_complete(ct) && !ct->errored;}
 
-static int mw_deinit_calltrace(mw_calltrace * ct)
+static int mw_calltrace_success (mw_calltrace * ct)
+{
+    return mw_calltrace_complete(ct) && !ct->errored;
+}
+
+static int mw_calltrace_deinit(mw_calltrace * ct)
 {
     return __mw_reset_calltrace(ct);
 }

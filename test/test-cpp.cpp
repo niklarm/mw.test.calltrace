@@ -21,6 +21,9 @@
 
 using namespace mw::test;
 
+//to test it only goes off on the specified functions
+void unwatched() {};
+
 void foo() {}
 void bar() {}
 void foobar() {foo(); bar();}
@@ -45,7 +48,9 @@ BOOST_AUTO_TEST_CASE(simple)
     BOOST_CHECK(ct_fail.inited());
     BOOST_CHECK(!ct_fail.complete());
 
+    unwatched();
     foobar();
+    unwatched();
 
     BOOST_CHECK(ct);
     BOOST_CHECK(!ct.errored());
@@ -88,12 +93,13 @@ BOOST_AUTO_TEST_CASE(repetition)
     BOOST_CHECK(ct_rep.inited());
     BOOST_CHECK(ct_flex.inited());
 
+    unwatched();
     foo_switch(false);
 
     BOOST_CHECK(ct);
-
+    unwatched();
     foo_switch(true);
-
+    unwatched();
 
     BOOST_CHECK(ct.complete());
     BOOST_CHECK(ct_once.complete());
@@ -130,8 +136,9 @@ BOOST_AUTO_TEST_CASE(nested)
     BOOST_CHECK(ct_fb.inited());
     BOOST_CHECK(ct_1.inited());
     BOOST_CHECK(ct_2.inited());
-
+    unwatched();
     func();
+    unwatched();
 
     BOOST_CHECK(ct_func);
     BOOST_CHECK(ct_switch);
@@ -178,4 +185,26 @@ BOOST_AUTO_TEST_CASE(ovl)
     BOOST_CHECK(ct_F.inited());
 
     BOOST_CHECK(!ct_10.inited());
+}
+
+void recurse(int cnt)
+{
+    if (cnt > 0)
+        recurse(cnt - 1);
+}
+
+BOOST_AUTO_TEST_CASE(recursion)
+{
+    calltrace<1> ct0(&recurse, 1, 0, &recurse);
+    calltrace<1> ct1(&recurse, 1, 1, &recurse);
+    calltrace<1> ct2(&recurse, 1, 2, &recurse);
+    calltrace<1> ct3(&recurse, 1, 3 ,&recurse);
+
+    recurse(4);
+    unwatched();
+
+    BOOST_CHECK(ct0);
+    BOOST_CHECK(ct1);
+    BOOST_CHECK(ct2);
+    BOOST_CHECK(ct3);
 }
