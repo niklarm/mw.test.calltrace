@@ -107,3 +107,75 @@ BOOST_AUTO_TEST_CASE(repetition)
     BOOST_CHECK(!ct_rep);
     BOOST_CHECK(ct_flex);
 }
+
+void func()
+{
+    foo_switch(true);
+    foobar();
+    foo_switch(false);
+}
+
+BOOST_AUTO_TEST_CASE(nested)
+{
+    calltrace<3> ct_func(&func, &foo_switch, &foobar, &foo_switch);
+    calltrace<3> ct_switch(&foo_switch, 2, &foo, &bar, any_fn);
+
+    calltrace<2> ct_fb(&foobar, &foo, &bar);
+
+    calltrace<3> ct_1(&foo_switch, 1, 0, &foo, &bar, &foo);
+    calltrace<3> ct_2(&foo_switch, 1, 1, &foo, &bar, &bar);
+
+    BOOST_CHECK(ct_func.inited());
+    BOOST_CHECK(ct_switch.inited());
+    BOOST_CHECK(ct_fb.inited());
+    BOOST_CHECK(ct_1.inited());
+    BOOST_CHECK(ct_2.inited());
+
+    func();
+
+    BOOST_CHECK(ct_func);
+    BOOST_CHECK(ct_switch);
+    BOOST_CHECK(ct_fb);
+    BOOST_CHECK(ct_1);
+    BOOST_CHECK(ct_2);
+}
+
+BOOST_AUTO_TEST_CASE(ovl)
+{
+    calltrace<1> ct_0(&foo, &bar);
+    calltrace<1> ct_1(&foo, &bar);
+    calltrace<1> ct_2(&foo, &bar);
+    calltrace<1> ct_3(&foo, &bar);
+    calltrace<1> ct_4(&foo, &bar);
+    calltrace<1> ct_5(&foo, &bar);
+    calltrace<1> ct_6(&foo, &bar);
+    calltrace<1> ct_7(&foo, &bar);
+    calltrace<1> ct_8(&foo, &bar);
+    calltrace<1> ct_9(&foo, &bar);
+    calltrace<1> ct_A(&foo, &bar);
+    calltrace<1> ct_B(&foo, &bar);
+    calltrace<1> ct_C(&foo, &bar);
+    calltrace<1> ct_D(&foo, &bar);
+    calltrace<1> ct_E(&foo, &bar);
+    calltrace<1> ct_F(&foo, &bar);
+    calltrace<1> ct_10(&foo, &bar);
+
+    BOOST_CHECK(ct_0.inited());
+    BOOST_CHECK(ct_1.inited());
+    BOOST_CHECK(ct_2.inited());
+    BOOST_CHECK(ct_3.inited());
+    BOOST_CHECK(ct_4.inited());
+    BOOST_CHECK(ct_5.inited());
+    BOOST_CHECK(ct_6.inited());
+    BOOST_CHECK(ct_7.inited());
+    BOOST_CHECK(ct_8.inited());
+    BOOST_CHECK(ct_9.inited());
+    BOOST_CHECK(ct_A.inited());
+    BOOST_CHECK(ct_B.inited());
+    BOOST_CHECK(ct_C.inited());
+    BOOST_CHECK(ct_D.inited());
+    BOOST_CHECK(ct_E.inited());
+    BOOST_CHECK(ct_F.inited());
+
+    BOOST_CHECK(!ct_10.inited());
+}
