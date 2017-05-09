@@ -19,6 +19,7 @@
 
 #include <array>
 #include <iostream>
+#include <climits>
 
 #define MW_NO_INSTRUMENT __attribute__((no_instrument_function))
 

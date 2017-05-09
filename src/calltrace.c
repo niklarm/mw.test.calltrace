@@ -13,11 +13,12 @@
  </pre>
  */
 
+#include <stdint.h>
 #include <mw/test/calltrace.def>
 
 enum type_t
 {
-    mw_enter, mw_exit,
+    mw_enter, mw_exit, mw_set, mw_reset
 };
 
 void __mw_profile(enum type_t type, void* this_fn, void *call_site) __attribute__((no_instrument_function, noinline));
@@ -26,12 +27,13 @@ void __mw_profile(enum type_t type, void* this_fn, void *call_site)
     //for the bp
 }
 
+#if defined(ULLONG_MAX)
+typedef unsigned long long timestamp_t;
+#else
+typedef unsigned long timestamp_t;
+#endif
 
-int __attribute__((weak)) mw_timestamp_tic()
-{
-    return 0;
-}
-const char* __attribute__((weak)) mw_timestamp_str()
+mw_timestamp_t __attribute__((weak)) mw_timestamp()
 {
     return 0;
 }
@@ -43,19 +45,18 @@ const char* __attribute__((weak)) mw_timestamp_str()
 
 
 static struct mw_calltrace_ * calltrace_stack[MW_CALLTRACE_STACK_SIZE];
-static int calltrace_size = -1;
+int __mw_calltrace_size = -1;
 
 
-static int depth = 1;
-static void __mw_calltrace_enter(void * this_fn) __attribute__((no_instrument_function));
-static void __mw_calltrace_exit (void * this_fn) __attribute__((no_instrument_function));
+unsigned int __mw_calltrace_depth = 1;
+void __mw_calltrace_enter(void * this_fn) __attribute__((no_instrument_function));
+void __mw_calltrace_exit (void * this_fn) __attribute__((no_instrument_function));
 
 
 void __mw_calltrace_enter(void * this_fn)
 {
-    depth++;
     int i, cnt = 0;
-    for (i = 0; (cnt < calltrace_size) && (i <= sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ * )); i++)
+    for (i = 0; (cnt < __mw_calltrace_size) && (i <= sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ * )); i++)
     {
         if (calltrace_stack[i] != 0)
         {
@@ -73,10 +74,10 @@ void __mw_calltrace_enter(void * this_fn)
                 }
                 else
                 {
-                    ct->start_depth = depth;
+                    ct->start_depth = __mw_calltrace_depth;
                 }
             }
-            else if (ct->start_depth == (depth-1)) //alright, I'm on the spot
+            else if (ct->start_depth == (__mw_calltrace_depth-1)) //alright, I'm on the spot
             {
                 if (ct->current_position >= ct->content_size) //to many calls
                 {
@@ -96,13 +97,13 @@ void __mw_calltrace_enter(void * this_fn)
 void __mw_calltrace_exit (void * this_fn)
 {
     int i, cnt = 0;
-    for (i = 0; (cnt < calltrace_size) && (i <= sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ * )); i++)
+    for (i = 0; (cnt < __mw_calltrace_size) && (i <= sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ * )); i++)
     {
         if (calltrace_stack[i] != 0)
         {
             cnt++;
             struct mw_calltrace_ *ct = calltrace_stack[i];
-            if (ct->start_depth == depth)
+            if (ct->start_depth == __mw_calltrace_depth)
             {
                 ct->start_depth = -1;
 
@@ -114,22 +115,21 @@ void __mw_calltrace_exit (void * this_fn)
             }
         }
     }
-    depth--;
 }
 
 
 int __mw_set_calltrace(struct mw_calltrace_ * ct) __attribute__((no_instrument_function));
 int __mw_set_calltrace(struct mw_calltrace_ * ct)
 {
-    if (calltrace_size < 0) //init the array first
+    if (__mw_calltrace_size < 0) //init the array first
     {
         int i;
         for (i = 0; i < sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ *); i++)
             calltrace_stack[i] = 0;
-        calltrace_size = 0;
+        __mw_calltrace_size = 0;
     }
 
-    if (calltrace_size >= (sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ *)))
+    if (__mw_calltrace_size >= (sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ *)))
         return 0;
 
     int i;
@@ -138,7 +138,8 @@ int __mw_set_calltrace(struct mw_calltrace_ * ct)
         if (calltrace_stack[i] == 0)
         {
             calltrace_stack[i] = ct;
-            calltrace_size ++;
+            __mw_calltrace_size ++;
+            __mw_profile(mw_set, ct, 0);
             break;
         }
     }
@@ -148,13 +149,14 @@ int __mw_set_calltrace(struct mw_calltrace_ * ct)
 int __mw_reset_calltrace(struct mw_calltrace_ * ct) __attribute__((no_instrument_function));
 int __mw_reset_calltrace(struct mw_calltrace_ * ct)
 {
-    int i = 0;
+    int i;
     for (i = 0; i < (sizeof(calltrace_stack)/sizeof(struct mw_calltrace_ *)); i++)
     {
         if (calltrace_stack[i] == ct)
         {
             calltrace_stack[i] = 0;
-            calltrace_size --;
+            __mw_profile(mw_reset, ct, 0);
+            __mw_calltrace_size --;
             return 1;
         }
     }
@@ -167,14 +169,18 @@ void __cyg_profile_func_exit (void *this_fn, void *call_site) __attribute__((no_
 
 void __cyg_profile_func_enter(void *this_fn, void *call_site)
 {
+    __mw_calltrace_depth++;
+
     __mw_profile(mw_enter, this_fn, call_site);
 
-    if (calltrace_size > 0)
+    if (__mw_calltrace_size > 0)
         __mw_calltrace_enter(this_fn);
 }
 void __cyg_profile_func_exit (void *this_fn, void *call_site)
 {
     __mw_profile(mw_exit, this_fn, call_site);
-    if (calltrace_size > 0)
+    if (__mw_calltrace_size > 0)
         __mw_calltrace_exit(this_fn);
+
+    __mw_calltrace_depth--;
 }
