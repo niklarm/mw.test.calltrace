@@ -13,6 +13,6 @@ project calltrace :
 lib mw-calltrace : mw-calltrace.cpp hrf_sink.cpp json_sink.cpp /boost//program_options 
 					: <link>shared <use>/boost//headers <define>RAPIDJSON_HAS_STDSTRING=1 ;
 
-lib calltrace-impl : calltrace.c : <link>static <debug-symbols>on <cflags>-gdwarf-2 ; 
+lib calltrace-impl : calltrace.c : <link>static <debug-symbols>on <target-os>linux:<cflags>-gdwarf-2 ; 
 
 alias calltrace : calltrace.c ;

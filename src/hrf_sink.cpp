@@ -48,7 +48,7 @@ struct hrf_sink_t : data_sink_t
         if (!func || !func->function)
             ss << "@0x" << std::hex << ptr << ":***unknown function***";
         else
-            ss << "@0x" << std::hex << ptr << *func->function;
+            ss << "@0x" << std::hex << ptr << ":" << *func->function;
 
         return ss.str();
     }
@@ -57,7 +57,7 @@ struct hrf_sink_t : data_sink_t
                std::uint64_t call_site_ptr, const boost::optional<mw::debug::address_info>& call_site,
                const boost::optional<std::uint64_t> & ts) override
     {
-        *os << "mw.calltrace entering function [@" << fn(func_ptr, func) << "]";
+        *os << "mw.calltrace entering function [" << fn(func_ptr, func) << "]";
         if (ts)
             *os << ", with timestamp " << *ts;
 
@@ -114,7 +114,7 @@ struct hrf_sink_t : data_sink_t
     void overflow(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) override
     {
         *os << "mw.calltrace.error overflow in calltrace @0x" << std::hex << cc.location()
-            << std::dec << " with size " << cc.content().size() << " at " << fn(addr, ai) << std::endl;
+            << std::dec << " with size " << cc.content().size() << " at [" << fn(addr, ai) << "]" << std::endl;
     }
     void mismatch(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) override
     {

@@ -1,22 +1,22 @@
-mw.calltrace   registered calltrace --hex-- [foobar()]: {[foo()], [bar()]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [foobar()]: {[bar()], [foo()]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [foobar()]: {[foo()]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [foobar()]: {[foo()], [bar()], [foo()]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [bar()]: {[dummy_vector<int>::size() const]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [foo()]: {[dummy_vector<int>::push_back(int&&) const]}, with timestamp --timestamps--
-mw.calltrace entering function [foobar()], with timestamp --timestamps--, at F:\mwspace\test\calltrace\test\plugin-test.cpp(61)
-mw.calltrace entering function [foo()], with timestamp --timestamps--
-mw.calltrace.error mismatch in calltrace --hex-- {[foo()] != [foobar()]}
-mw.calltrace entering function [dummy_vector<int>::push_back(int&&) const], with timestamp --timestamps--
-mw.calltrace  exiting function [dummy_vector<int>::push_back(int&&) const], with timestamp --timestamps--
-mw.calltrace  exiting function [foo()], with timestamp --timestamps--
-mw.calltrace entering function [bar()], with timestamp --timestamps--
-mw.calltrace.error mismatch in calltrace --hex-- {[bar()] != [foobar()]}
-mw.calltrace.error overflow in calltrace --hex-- with size 1 at bar()
-mw.calltrace entering function [dummy_vector<int>::size() const], with timestamp --timestamps--
-mw.calltrace  exiting function [dummy_vector<int>::size() const], with timestamp --timestamps--
-mw.calltrace  exiting function [bar()], with timestamp --timestamps--
-mw.calltrace  exiting function [foobar()], with timestamp --timestamps--, at F:\mwspace\test\calltrace\test\plugin-test.cpp(61)
+mw.calltrace   registered calltrace --hex-- [@--hex--:foobar()]: {[@--hex--:foo()], [@--hex--:bar()]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [@--hex--:foobar()]: {[@--hex--:bar()], [@--hex--:foo()]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [@--hex--:foobar()]: {[@--hex--:foo()]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [@--hex--:foobar()]: {[@--hex--:foo()], [@--hex--:bar()], [@--hex--:foo()]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [@--hex--:bar()]: {[dummy_vector<int>::size() const]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [@--hex--:foo()]: {[dummy_vector<int>::push_back(int&&) const]}, with timestamp --timestamps--
+mw.calltrace entering function [@--hex--:foobar()], with timestamp --timestamps--, at F:\mwspace\test\calltrace\test\plugin-test.cpp(61)
+mw.calltrace entering function [@--hex--:foo()], with timestamp --timestamps--
+mw.calltrace.error mismatch in calltrace --hex-- {[@--hex--:foo()] != [@--hex--:foobar()]}
+mw.calltrace entering function [@--hex--:dummy_vector<int>::push_back(int&&) const], with timestamp --timestamps--
+mw.calltrace  exiting function [@--hex--:dummy_vector<int>::push_back(int&&) const], with timestamp --timestamps--
+mw.calltrace  exiting function [@--hex--:foo()], with timestamp --timestamps--
+mw.calltrace entering function [@--hex--:bar()], with timestamp --timestamps--
+mw.calltrace.error mismatch in calltrace --hex-- {[@--hex--:bar()] != [@--hex--:foobar()]}
+mw.calltrace.error overflow in calltrace --hex-- with size 1 at [@--hex--:bar()]
+mw.calltrace entering function [@--hex--:dummy_vector<int>::size() const], with timestamp --timestamps--
+mw.calltrace  exiting function [@--hex--:dummy_vector<int>::size() const], with timestamp --timestamps--
+mw.calltrace  exiting function [@--hex--:bar()], with timestamp --timestamps--
+mw.calltrace  exiting function [@--hex--:foobar()], with timestamp --timestamps--, at F:\mwspace\test\calltrace\test\plugin-test.cpp(61)
 mw.calltrace.error incomplete in calltrace --hex-- stopped 2/3
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors, with timestamp --timestamps--
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 2 errors, with timestamp --timestamps--
