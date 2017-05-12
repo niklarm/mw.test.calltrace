@@ -1,3 +1,4 @@
+import py-testing : run-py ;
 
 project test :
 	source-location .	
@@ -11,10 +12,23 @@ alias boost_test : /boost//unit_test_framework ;
 alias boost_moni : /boost//prg_exec_monitor    ;
 
 exe test-cpp : test-cpp.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <library>boost_test <library>boost_moni <library>..//calltrace-impl ;
-exe test-c   : test-c.c     : <toolset>gcc:<cflags>-finstrument-functions <library>boost_test <library>boost_moni <library>..//calltrace-impl ;
+exe test-c   : test-c.c     : <toolset>gcc:<cflags>-finstrument-functions <library>..//calltrace-impl ;
+
+obj plugin-test-o    : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions ;
+obj plugin-test-ts-o : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <define>MW_TEST_TIMESTAMP ;
 
 
+exe plugin-test    : plugin-test-o    : <library>..//calltrace-impl <optimization>off ;
+exe plugin-test-ts : plugin-test-ts-o : <library>..//calltrace-impl <optimization>off ;
 
-run overload.cpp : : : <library>boost_test <library>boost_moni ;
-run test-cpp     : : : : test-cpp-run ;
-run test-c       : : : : test-c-run ;
+
+test-suite bare-test : 
+        [ run overload.cpp   : : : <library>boost_test <library>boost_moni ]
+        [ run test-cpp       : : : : test-cpp-run                          ]
+        [ run test-c         : : : : test-c-run                            ]
+        [ run plugin-test    : : : : plugin-test-run                       ]
+        [ run plugin-test-ts : : : : plugin-test-ts-run                    ]
+		;
+
+run-py test-plugin.py : :
+		 /mw.test//mw-calltrace /mw.test//mw-dbg-runner hrf-cmp-ts.txt hrf-cmp.txt plugin-test plugin-test-ts : <dependency>bare-test ;

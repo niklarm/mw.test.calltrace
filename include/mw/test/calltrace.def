@@ -38,7 +38,7 @@ typedef unsigned long long mw_timestamp_t;
 typedef unsigned long mw_timestamp_t;
 #endif
 
-mw_timestamp_t mw_timestamp()         __attribute__((no_instrument_function));
+mw_timestamp_t mw_timestamp() __attribute__((no_instrument_function));
 
 int __mw_set_calltrace  (struct mw_calltrace_ * ct) __attribute__((no_instrument_function));
 int __mw_reset_calltrace(struct mw_calltrace_ * ct) __attribute__((no_instrument_function));

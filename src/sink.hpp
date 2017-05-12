@@ -34,6 +34,7 @@ struct data_sink_t
     virtual void mismatch(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) = 0;
 
     virtual void incomplete(const calltrace_clone & cc, int missing) = 0;
+    virtual void timestamp_unavailable() = 0;
 
 
 };

@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <limits.h>
 #include <mw/test/calltrace.def>
 
 enum type_t
@@ -32,12 +33,6 @@ typedef unsigned long long timestamp_t;
 #else
 typedef unsigned long timestamp_t;
 #endif
-
-mw_timestamp_t __attribute__((weak)) mw_timestamp()
-{
-    return 0;
-}
-
 
 #if !defined(MW_CALLTRACE_STACK_SIZE)
 #define MW_CALLTRACE_STACK_SIZE 16

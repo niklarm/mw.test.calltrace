@@ -36,6 +36,12 @@ extern "C" {
 
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
 
+typedef mw_timestamp_t timestamp_t;
+
+timestamp_t timestamp() asm("mw_timestamp");
+
+
+
 
 struct any_fn_t
 {

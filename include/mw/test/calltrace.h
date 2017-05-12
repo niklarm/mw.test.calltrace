@@ -20,8 +20,6 @@
 #include <limits.h>
 #include <mw/test/calltrace.def>
 
-
-
 #define MW_NO_INSTRUMENT __attribute__((no_instrument_function))
 
 typedef struct mw_calltrace_ mw_calltrace;

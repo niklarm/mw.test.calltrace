@@ -56,7 +56,7 @@ struct json_sink_t : data_sink_t
         calls.SetArray();
         errors.SetArray();
     }
-    ~json_sink_t()
+    virtual ~json_sink_t()
     {
         doc.AddMember("calls",  std::move(calls),  doc.GetAllocator());
         doc.AddMember("errors", std::move(errors), doc.GetAllocator());
@@ -205,6 +205,7 @@ struct json_sink_t : data_sink_t
         rj::Value val;
         val.SetObject();
 
+        val.AddMember("mode", "error", doc.GetAllocator());
         val.AddMember("type", "overflow", doc.GetAllocator());
         val.AddMember("calltrace-loc", cc.location(), doc.GetAllocator());
         if (ai)
@@ -225,7 +226,8 @@ struct json_sink_t : data_sink_t
         rj::Value val;
         val.SetObject();
 
-        val.AddMember("type", "overflow", doc.GetAllocator());
+        val.AddMember("mode", "error", doc.GetAllocator());
+        val.AddMember("type", "mismatch", doc.GetAllocator());
 
         if (ai)
             val.AddMember("function", address_info(*ai), doc.GetAllocator());
@@ -246,6 +248,7 @@ struct json_sink_t : data_sink_t
         rj::Value val;
         val.SetObject();
 
+        val.AddMember("mode", "error", doc.GetAllocator());
         val.AddMember("type", "incomplete", doc.GetAllocator());
 
         val.AddMember("position", position, doc.GetAllocator());
@@ -258,6 +261,17 @@ struct json_sink_t : data_sink_t
 
         val.AddMember("calltrace", std::move(ct), doc.GetAllocator());
         val.AddMember("location", cc.location(), doc.GetAllocator());
+
+        errors.PushBack(std::move(val), doc.GetAllocator());
+    }
+
+
+    void timestamp_unavailable() override
+    {
+        rj::Value val;
+        val.SetObject();
+        val.AddMember("mode", "error", doc.GetAllocator());
+        val.AddMember("type", "missing-timestamp", doc.GetAllocator());
 
         errors.PushBack(std::move(val), doc.GetAllocator());
     }

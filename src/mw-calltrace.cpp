@@ -38,9 +38,7 @@ using namespace std;
 data_sink_t * data_sink = nullptr;
 
 std::string sink_file;
-std::string log_sink_file;
 std::string format;
-bool no_exit_code = false;
 bool log_all = false;
 bool profile = false;
 bool minimal = false;
@@ -53,6 +51,8 @@ struct mw_calltrace : break_point
     std::unordered_map<std::uint64_t, boost::optional<address_info>> addr_map;
 
     std::vector<calltrace_clone> cts;
+
+    bool timestamp_available = true;
 
     //buffered version
     boost::optional<address_info> addr2line(frame & fr, std::uint64_t pos)
@@ -95,7 +95,7 @@ struct mw_calltrace : break_point
 
         auto ts = timestamp(fr);
 
-        if (minimal)
+        if (!minimal)
             data_sink->enter(function_loc, callsite_loc, ts);
 
         if (cts.empty())
@@ -136,7 +136,7 @@ struct mw_calltrace : break_point
         auto callsite_loc = addr2line(fr, std::stoull(callsite_arg.value, nullptr, 16));
 
         auto ts = timestamp(fr);
-        if (minimal)
+        if (!minimal)
             data_sink->exit(function_loc, callsite_loc, ts);
 
         if (cts.empty())
@@ -199,21 +199,32 @@ struct mw_calltrace : break_point
 
     boost::optional<std::uint64_t> timestamp(frame &fr)
     {
-        if (!profile)
+        if (!profile || !timestamp_available)
             return boost::none;
+
+
 
         fr.disable(*this);
         auto ct_size = fr.print("__mw_calltrace_size").value;
+        fr.set("__mw_calltrace_size", "0");
 
-        auto res = fr.call("mw_timestamp()");
-
+        std::string value;
+        try {
+            auto res = fr.print("mw_timestamp()");
+            value = res.value;
+        }
+        catch (mw::debug::interpreter_error & ie) //that means it's not available.
+        {
+            data_sink->timestamp_unavailable();
+            timestamp_available = false;
+        }
         fr.set("__mw_calltrace_size", ct_size);
         fr.enable(*this);
 
-        if (res)
-            return std::stoull(res->value);
+        if (value.empty())
+            return boost::none;
         else
-            return 0;
+            return std::stoull(value);
     }
 
 };
@@ -265,11 +276,11 @@ void mw_dbg_setup_options(boost::program_options::options_description & op)
 {
     namespace po = boost::program_options;
     op.add_options()
-                   ("mw-calltrace-sink",    po::value<string>(&sink_file),  "test data sink")
-                   ("mw-calltrace-format",  po::value<string>(&format),     "format [hrf, json]")
-                   ("mw-calltrace-log",     po::bool_switch(&log_all),      "log all calls")
-                   ("mw-calltrace-profile", po::bool_switch(&profile),      "enable profiling")
-                   ("mw-calltrace-minimal", po::bool_switch(&minimal),      "only output the result of the actual calltraces")
-                   ("mw-calltrace-depth",   po::value<int>(&ct_depth)->default_value(-1), "maximum depth of the calltrace recording")
+                   ("mw-calltrace-sink",      po::value<string>(&sink_file),  "test data sink")
+                   ("mw-calltrace-format",    po::value<string>(&format),     "format [hrf, json]")
+                   ("mw-calltrace-all",       po::bool_switch(&log_all),      "log all calls")
+                   ("mw-calltrace-timestamp", po::bool_switch(&profile),      "enable profiling")
+                   ("mw-calltrace-minimal",   po::bool_switch(&minimal),      "only output the result of the actual calltraces")
+                   ("mw-calltrace-depth",     po::value<int>(&ct_depth)->default_value(-1), "maximum depth of the calltrace recording")
                    ;
 }

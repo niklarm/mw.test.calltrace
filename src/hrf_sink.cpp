@@ -76,7 +76,7 @@ struct hrf_sink_t : data_sink_t
 
     void set(const calltrace_clone & cc, const boost::optional<std::uint64_t> & ts) override
     {
-        *os << "mw.calltrace registered calltrace(0x" << std::hex << cc.location() << std::dec <<")[" << fn(cc.fn().info) <<  "]: ";
+        *os << "mw.calltrace   registered calltrace @0x" << std::hex << cc.location() << std::dec <<" [" << fn(cc.fn().info) <<  "]: ";
 
         *os << "{";
 
@@ -100,7 +100,8 @@ struct hrf_sink_t : data_sink_t
 
     void reset(const calltrace_clone & cc, int error_cnt, const boost::optional<std::uint64_t> & ts) override
     {
-        *os << "mw.calltrace unregistered calltrace(0x" << std::hex << cc.location() << std::dec << ") with " << error_cnt << " errors";
+        *os << "mw.calltrace unregistered calltrace @0x" << std::hex << cc.location() << std::dec
+            << " executed " << cc.repeated() << " times, with " << error_cnt << " errors";
         if (ts)
             *os << ", with timestamp " << *ts;
         *os << std::endl;
@@ -108,19 +109,24 @@ struct hrf_sink_t : data_sink_t
 
     void overflow(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) override
     {
-        *os << "mw.calltrace.error overflow in calltrace(0x" << std::hex << cc.location()
-            << std::dec << ") with size " << cc.content().size() << " at " << fn(ai) << std::endl;
+        *os << "mw.calltrace.error overflow in calltrace @0x" << std::hex << cc.location()
+            << std::dec << " with size " << cc.content().size() << " at " << fn(ai) << std::endl;
     }
     void mismatch(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) override
     {
-         *os << "mw.calltrace.error mismatch in calltrace(0x" << std::hex << cc.location()
-             << std::dec << ") {[" << fn(ai) << "] != [" << fn(cc.fn().info) << "]}" << std::endl;
+         *os << "mw.calltrace.error mismatch in calltrace @0x" << std::hex << cc.location()
+             << std::dec << " {[" << fn(ai) << "] != [" << fn(cc.fn().info) << "]}" << std::endl;
     }
     void incomplete(const calltrace_clone & cc, int position) override
     {
         auto sz = cc.content().size();
-        *os << "mw.calltrace.error incomplete in calltrace(0x" << std::hex << cc.location() << std::dec
-            << ") stopped " << position << "/" << sz << std::endl;
+        *os << "mw.calltrace.error incomplete in calltrace @0x" << std::hex << cc.location() << std::dec
+            << " stopped " << position << "/" << sz << std::endl;
+    }
+
+    void timestamp_unavailable() override
+    {
+        *os << "mw.calltrace.error timestamp not available" << std::endl;
     }
 };
 
