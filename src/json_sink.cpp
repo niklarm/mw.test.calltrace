@@ -96,13 +96,16 @@ struct json_sink_t : data_sink_t
         return val;
     }
 
-    void enter(const boost::optional<mw::debug::address_info>& func,
-               const boost::optional<mw::debug::address_info>& call_site,
+    void enter(std::uint64_t      func_ptr, const boost::optional<mw::debug::address_info>& func,
+               std::uint64_t call_site_ptr, const boost::optional<mw::debug::address_info>& call_site,
                const boost::optional<std::uint64_t> & ts) override
     {
         rj::Value val;
         val.SetObject();
         val.AddMember("mode", "enter", doc.GetAllocator());
+        val.AddMember("this_fn_ptr",    func_ptr, doc.GetAllocator());
+        val.AddMember("call_site_ptr", call_site_ptr, doc.GetAllocator());
+
         if (func)
             val.AddMember("this_fn", address_info(*func), doc.GetAllocator());
         if (call_site)
@@ -113,13 +116,15 @@ struct json_sink_t : data_sink_t
 
         add_to_calls(std::move(val));
     }
-    void exit (const boost::optional<mw::debug::address_info>& func,
-               const boost::optional<mw::debug::address_info>& call_site,
+    void exit (std::uint64_t      func_ptr, const boost::optional<mw::debug::address_info>& func,
+               std::uint64_t call_site_ptr, const boost::optional<mw::debug::address_info>& call_site,
                const boost::optional<std::uint64_t> & ts) override
     {
         rj::Value val;
         val.SetObject();
         val.AddMember("mode", "exit", doc.GetAllocator());
+        val.AddMember("this_fn_ptr",    func_ptr, doc.GetAllocator());
+        val.AddMember("call_site_ptr", call_site_ptr, doc.GetAllocator());
         if (func)
             val.AddMember("this_fn", address_info(*func), doc.GetAllocator());
         if (call_site)
@@ -200,14 +205,15 @@ struct json_sink_t : data_sink_t
         errors.PushBack(std::move(val), doc.GetAllocator());
     }
 
-    void overflow(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) override
+    void overflow(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) override
     {
         rj::Value val;
         val.SetObject();
 
         val.AddMember("mode", "error", doc.GetAllocator());
         val.AddMember("type", "overflow", doc.GetAllocator());
-        val.AddMember("calltrace-loc", cc.location(), doc.GetAllocator());
+        val.AddMember("calltrace_loc", cc.location(), doc.GetAllocator());
+        val.AddMember("function_ptr", addr, doc.GetAllocator());
         if (ai)
             val.AddMember("function", address_info(*ai), doc.GetAllocator());
 
@@ -221,13 +227,14 @@ struct json_sink_t : data_sink_t
 
         errors.PushBack(std::move(val), doc.GetAllocator());
     }
-    void mismatch(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) override
+    void mismatch(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) override
     {
         rj::Value val;
         val.SetObject();
 
         val.AddMember("mode", "error", doc.GetAllocator());
         val.AddMember("type", "mismatch", doc.GetAllocator());
+        val.AddMember("function_ptr", addr, doc.GetAllocator());
 
         if (ai)
             val.AddMember("function", address_info(*ai), doc.GetAllocator());

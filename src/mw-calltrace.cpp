@@ -96,7 +96,7 @@ struct mw_calltrace : break_point
         auto ts = timestamp(fr);
 
         if (!minimal)
-            data_sink->enter(function_loc, callsite_loc, ts);
+            data_sink->enter(function_ptr, function_loc, callsite_ptr,  callsite_loc, ts);
 
         if (cts.empty())
             return;
@@ -120,10 +120,10 @@ struct mw_calltrace : break_point
                 {
                     if (ct.ovl())
                         //log the overflow
-                        data_sink->overflow(ct, function_loc);
+                        data_sink->overflow(ct, function_ptr, function_loc);
                     else
                         //log the error
-                        data_sink->mismatch(ct, function_loc);
+                        data_sink->mismatch(ct, function_ptr, function_loc);
                 }
             }
         }
@@ -132,12 +132,16 @@ struct mw_calltrace : break_point
     {
         auto function_arg = fr.arg_list(1);
         auto callsite_arg = fr.arg_list(2);
-        auto function_loc = addr2line(fr, std::stoull(function_arg.value, nullptr, 16));
-        auto callsite_loc = addr2line(fr, std::stoull(callsite_arg.value, nullptr, 16));
+
+        auto function_ptr = std::stoull(function_arg.value, nullptr, 16);
+        auto callsite_ptr = std::stoull(callsite_arg.value, nullptr, 16);
+
+        auto function_loc = addr2line(fr, function_ptr);
+        auto callsite_loc = addr2line(fr, callsite_ptr);
 
         auto ts = timestamp(fr);
         if (!minimal)
-            data_sink->exit(function_loc, callsite_loc, ts);
+            data_sink->exit(function_ptr, function_loc, callsite_ptr,  callsite_loc, ts);
 
         if (cts.empty())
             return;

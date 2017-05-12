@@ -14,8 +14,8 @@ alias boost_moni : /boost//prg_exec_monitor    ;
 exe test-cpp : test-cpp.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <library>boost_test <library>boost_moni <library>..//calltrace-impl ;
 exe test-c   : test-c.c     : <toolset>gcc:<cflags>-finstrument-functions <library>..//calltrace-impl ;
 
-obj plugin-test-o    : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions ;
-obj plugin-test-ts-o : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <define>MW_TEST_TIMESTAMP ;
+obj plugin-test-o    : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <cxxflags>-gdwarf-2 ;
+obj plugin-test-ts-o : plugin-test.cpp : <toolset>gcc:<cxxflags>-finstrument-functions <cxxflags>-gdwarf-2 <define>MW_TEST_TIMESTAMP ;
 
 
 exe plugin-test    : plugin-test-o    : <library>..//calltrace-impl <optimization>off ;

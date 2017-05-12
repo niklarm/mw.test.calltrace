@@ -20,21 +20,23 @@
 
 struct data_sink_t
 {
-    virtual void enter(const boost::optional<mw::debug::address_info>& func,
-                       const boost::optional<mw::debug::address_info>& call_site,
+    virtual void enter(std::uint64_t      func_ptr, const boost::optional<mw::debug::address_info>& func,
+                       std::uint64_t call_site_ptr, const boost::optional<mw::debug::address_info>& call_site,
                        const boost::optional<std::uint64_t> & ts = boost::none) = 0;
-    virtual void exit (const boost::optional<mw::debug::address_info>& func,
-                       const boost::optional<mw::debug::address_info>& call_site,
+    virtual void exit (std::uint64_t      func_ptr, const boost::optional<mw::debug::address_info>& func,
+                       std::uint64_t call_site_ptr, const boost::optional<mw::debug::address_info>& call_site,
                        const boost::optional<std::uint64_t> & ts = boost::none) = 0;
 
     virtual void set  (const calltrace_clone & cc, const boost::optional<std::uint64_t> & ts) = 0;
     virtual void reset(const calltrace_clone & cc, int error_cnt, const boost::optional<std::uint64_t> & ts) = 0;
 
-    virtual void overflow(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) = 0;
-    virtual void mismatch(const calltrace_clone & cc, const boost::optional<mw::debug::address_info> & ai) = 0;
+    virtual void overflow(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) = 0;
+    virtual void mismatch(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) = 0;
 
     virtual void incomplete(const calltrace_clone & cc, int missing) = 0;
     virtual void timestamp_unavailable() = 0;
+
+    virtual ~data_sink_t() = default;
 
 
 };
