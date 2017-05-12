@@ -29,7 +29,6 @@ struct mw_calltrace_
     int repeated;
     int current_position;
     int start_depth;
-        	
 };
 
 #if defined(ULLONG_MAX)
