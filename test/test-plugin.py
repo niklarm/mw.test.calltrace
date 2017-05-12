@@ -55,6 +55,7 @@ print ("Plugin    : " + plugin_test)
 print ("HRF-CMP   : " + hrf_cmp_file)
 print ("HRF-CMP-ts: " + hrf_cmp_ts_file)
 
+errored = False
 
 plugin_test_ts_out = subprocess.check_output([runner, "--exe", plugin_test_ts, "--lib", calltrace, "--mw-calltrace-timestamp"]).decode()
 plugin_test_out    = subprocess.check_output([runner, "--exe", plugin_test,    "--lib", calltrace, "--mw-calltrace-timestamp"]).decode()
@@ -68,7 +69,6 @@ ts_regex = re.compile(r"with timestamp \d+")
 plugin_test_out    = ts_regex.sub("with timestamp --timestamps--", hex_regex.sub("--hex--", plugin_test_out)).splitlines()
 plugin_test_ts_out = ts_regex.sub("with timestamp --timestamps--", hex_regex.sub("--hex--", plugin_test_ts_out)).splitlines()
 
-errored = False
 
 with open(hrf_cmp_file) as f:
     hrf_cmp = f.read().splitlines()
@@ -76,8 +76,9 @@ with open(hrf_cmp_file) as f:
     for out, cmp in zip(plugin_test_out, hrf_cmp):
         if (out != cmp):
             print(hrf_cmp_file + '(' + str(i) + ') :Mismatch in comparison : "' + out + '" != "' + cmp + '"')
-            i+=1
-            errored = True;
+            errored = True
+        i+=1
+
 
 with open(hrf_cmp_ts_file) as f:
     hrf_cmp_ts = f.read().splitlines()
@@ -85,8 +86,8 @@ with open(hrf_cmp_ts_file) as f:
     for out, cmp in zip(plugin_test_ts_out, hrf_cmp_ts):
         if (out != cmp):
             print(hrf_cmp_ts_file + '(' + str(i) + ')Mismatch in comparison : "' + out + '" != "' + cmp + '"')
-            i+=1
             errored = True;
+        i+=1
 
 plugin_test_out    = subprocess.check_output([runner, "--exe", plugin_test,    "--lib", calltrace, "--mw-calltrace-timestamp"]).decode()
 
@@ -100,7 +101,7 @@ min_json = json.loads(min.decode())
 
 def compare(Lhs, Rhs):
     if Lhs != Rhs:
-        errored = True;
+        errored = True
         print ('Error: "' + str(Lhs) + '" != "' + str(Rhs) + '"');
 
 compare(len(min_json["calls"]), 0)

@@ -38,8 +38,10 @@ struct hrf_sink_t : data_sink_t
     {
         if (!location)
             return "***unknown location***(0)";
+        else if (!location->full_name)
+            return boost::replace_all_copy(location->file, "\\\\", "\\") + "(" + std::to_string(location->line) + ")";
         else
-            return boost::replace_all_copy(location->full_name, "\\\\", "\\") + "(" + std::to_string(location->line) + ")";
+            return boost::replace_all_copy(*location->full_name, "\\\\", "\\") + "(" + std::to_string(location->line) + ")";
     }
 
     std::string fn(std::uint64_t ptr, const boost::optional<mw::debug::address_info> & func)

@@ -74,7 +74,8 @@ struct json_sink_t : data_sink_t
         rj::Value val;
         val.SetObject();
         val.AddMember("file", ai.file, doc.GetAllocator());
-        val.AddMember("full_name", ai.full_name, doc.GetAllocator());
+        if (ai.full_name)
+            val.AddMember("full_name",  boost::replace_all_copy(*ai.full_name, "\\\\", "\\"), doc.GetAllocator());
         val.AddMember("line", ai.line, doc.GetAllocator());
         if (ai.function)
             val.AddMember("function", *ai.function, doc.GetAllocator());
@@ -175,7 +176,9 @@ struct json_sink_t : data_sink_t
                     if (i.function)
                         val.AddMember("fn", *i.function, doc.GetAllocator());
                     val.AddMember("line", i.line, doc.GetAllocator());
-                    val.AddMember("file", boost::replace_all_copy(i.full_name, "\\\\", "\\"), doc.GetAllocator());
+                    val.AddMember("file", boost::replace_all_copy(i.file, "\\\\", "\\"), doc.GetAllocator());
+                    if (i.full_name)
+                        val.AddMember("full_name", boost::replace_all_copy(*i.full_name, "\\\\", "\\"), doc.GetAllocator());
                 }
 
                 arr.PushBack(std::move(val), doc.GetAllocator());

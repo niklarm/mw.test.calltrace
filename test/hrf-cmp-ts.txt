@@ -2,8 +2,8 @@ mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()]
 mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:bar()], [--hex--:foo()]}, with timestamp --timestamps--
 mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()]}, with timestamp --timestamps--
 mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()], [--hex--:bar()], [--hex--:foo()]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [--hex--:bar()]: {[dummy_vector<int>::size() const]}, with timestamp --timestamps--
-mw.calltrace   registered calltrace --hex-- [--hex--:foo()]: {[dummy_vector<int>::push_back(int&&) const]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [--hex--:bar()]: {[--hex--:dummy_vector<int>::size() const]}, with timestamp --timestamps--
+mw.calltrace   registered calltrace --hex-- [--hex--:foo()]: {[--hex--:dummy_vector<int>::push_back(int&&) const]}, with timestamp --timestamps--
 mw.calltrace entering function [--hex--:foobar()], with timestamp --timestamps--, at F:\mwspace\test\calltrace\test\plugin-test.cpp(61)
 mw.calltrace entering function [--hex--:foo()], with timestamp --timestamps--
 mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:foo()] != [--hex--:foobar()]}
