@@ -51,4 +51,20 @@ before_script:
     - cp user-config.travis.jam user-config.jam
     - cd ./calltrace/test
 script:
-- $BOOST/b2 -sBOOST_ROOT=$BOOST define=MW_TRAVISCI_BUILD toolset=gcc-6 linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=. -j4 address-model=$ADDRESS_MODEL
+- $BOOST/b2 -sBOOST_ROOT=$BOOST define=MW_TRAVISCI_BUILD toolset=gcc-6 linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=. -j4 address-model=$ADDRESS_MODEL testing.launcher=valgrind valgrind=on cxxflags=--coverage cflags=--coverage linkflags=--coverage 
+after_success:
+    # Copying Coveralls data to a separate folder
+    - mkdir -p ./coverals
+    - find ../../bin.mw/backend -name *.gcda -exec cp "{}" ./coverals/ \;
+    - find ../../bin.mw/backend -name *.gcno -exec cp "{}" ./coverals/ \;
+
+    # Preparing Coveralls data by changind data format to a readable one
+    - git clone https://github.com/linux-test-project/lcov.git lcov_dir
+    - GCOV_VERSION="--gcov-tool gcov-6"
+    - LCOV="$MW_TEST/backend/test/lcov_dir/bin/lcov $GCOV_VERSION"
+    - $LCOV --directory ./coverals/ --base-directory ./ --capture --output-file ./coverals/coverage.info
+    - $LCOV --remove ./coverals/coverage.info ../test/* boost* /usr* -o ./coverals/coverage.info
+
+    # Sending data to Coveralls
+    - gem install coveralls-lcov
+    - coveralls-lcov ./coverals/coverage.info
