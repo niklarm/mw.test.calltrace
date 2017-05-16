@@ -16,3 +16,12 @@ lib mw-calltrace : mw-calltrace.cpp hrf_sink.cpp json_sink.cpp /boost//program_o
 lib calltrace-impl : calltrace.c : <link>static <debug-symbols>on <target-os>linux:<cflags>-gdwarf-2 ; 
 
 alias calltrace : calltrace.c ;
+
+import package ;
+
+alias headers :
+        ../include/mw/test/calltrace
+        ../include/mw/test/calltrace.def
+        ../include/mw/test/calltrace.hpp
+        ../include/mw/test/calltrace.h
+        ;
