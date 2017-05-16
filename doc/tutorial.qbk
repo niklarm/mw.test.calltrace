@@ -1,0 +1,193 @@
+[def __reference__ [link calltrace.reference reference]]
+
+[def mw::test::calltrace [classref mw::test::calltrace mw::test::calltrace]]
+[def mw::test::any_fn [globalref mw::test::any_fn mw::test::any_fn]]
+
+[def mw_calltrace [classref mw_calltrace mw_calltrace]]
+
+[def mw_calltrace_init [funcref mw_calltrace_init mw_calltrace_init]]
+[def mw_calltrace_deinit [funcref mw_calltrace_deinit mw_calltrace_deinit]]
+[def mw_calltrace_success [funcref mw_calltrace_success mw_calltrace_success]]
+
+[section:tutorial Tutorial]
+
+[section:technique How it works]
+
+And old coding relict of gcc, that also made it into clang, is the `-finstrument-functions`. When passed to the compiler, it will cause a call of 
+`__cyg_profile_func_enter` for every function entered, and `__cyg_profile_func_exit` for every function exited. These functions take a pointer 
+to the function and one to the location of the call.
+Our provided source-file `calltrace.c` does implement those functions and connect them to our calltrace. 
+
+[important In order to build you will have to compile the sources that need tracing with passing `-finstrument-function` to the compiler and 
+adding `calltrace.c` as a source.] 
+
+[note You can use the [macroref MW_NO_INSTRUMENT MW_NO_INSTRUMENT] macro to avoid functions to be instrumented.]
+
+[endsect]
+
+[section:running Testing a calls sequence]
+
+The calltrace allows to trace the calls of a certain function. The calltrace is registered for a certain function, 
+which means that it will only check what this function calls, but not nested calls.
+
+[import ../example/start.cpp]
+[import ../example/start_c.c]
+
+[table:header_table Simple Example
+    [[C++] [C] [UML]]
+    [[[start_example]] [[start_example_c]] ['''<imagedata fileref="images/ct.svg"/>''']]
+]
+
+
+For the given example the calltrace will only check the calls made directly from `foo` and `bar`. But, since it might be desireable to trace those as well
+several calltrace can be used at once.
+
+
+
+[endsect]
+
+[section:nesting Nested calls]
+
+Given that subcalls might be of interest the calltracing can be stacked. So we can extend the test given in the previous section by adding more 
+detailed calltraces.
+
+[table:header_table Nested Example
+    [[C++] [C] [UML]]
+    [[[start_example_ext]] [[start_example_ext_c]] ['''<imagedata fileref="images/ct_ext.svg"/>''']]
+]
+
+[note The default number is 16, but can be changed by defining `MW_CALLTRACE_STACK_SIZE` with the appropriate number.]
+
+By using several calltraces we can thus also trace nested calls.
+
+[note You can check that the calltrace was inited properly, i.e. placed on the calltrace stack, 
+by either calling [memberref mw::test::calltrace::inited inited] in C++ or checking the return value of [funcref mw_calltrace_init mw_calltrace_init] in C.]
+
+[endsect]
+
+
+[section:wildcard Wildcard]
+
+The calltrace can also use a wildcard for a function, i.e. allow any function to be called. This might be useful in C, but is necessary in C++, because
+there is no way to obtain a pointer to a constructor or destructor, even though they will be traced.
+
+[import ../example/wildcard.cpp]
+[wildcard]
+
+
+A wildcard can be achieved by using [globalref mw::test::any_fn any_fn] in C++ or literal zero in the array for C.
+
+[note The ctor call is only traced if the type is not a POD or the POD has a defined constructor.]
+
+[endsect]
+
+[section:position Skip & Repetition]
+
+Since we can use small calltraces for nested calls, it might occur that some functions get activated several times. This can cause a problem 
+if the sequence of the calls inside it changes. To workaround that, a calltrace an have a number of calls that are ignore before activating it, and a 
+limit of calls it will get activated. The default behavior is that all calls are traced.
+
+To demonstrate that we have a lonver example below, showing how to position different calltraces.
+
+[import ../example/repeat.cpp]
+[import ../example/repeat_c.c]
+
+[table:header_table Repetition & skip example
+    [[C++] [C] [UML]]
+    [[[repeat_example]] [[repeat_example_c]] ['''<imagedata fileref="images/ct_repeat.svg"/>''']]
+]
+
+[endsect]
+
+
+[section:overload Overloaded functions]
+
+Since functions can be overloaded in C++, but the calltrace must get a valid pointer, overloading can cause a lot of boilerplate code. 
+The following code would fail to compile, because it yields an ambiguity error for automatic type deduction. 
+
+
+[def __calltrace__ [classref mw::test::calltrace calltrace]]
+
+
+```
+using namespace mw::test;
+
+void foo(int);
+void foo(double);
+
+void func() {foo(42); foo(3.142);}
+
+__calltrace__<2> ct{&func,
+                &foo,
+                &foo};
+
+```
+
+The valid C++ solution is to add a `static_cast` to force the compiler to use the right function.
+
+```
+__calltrace__<2> ct{&func,
+                static_cast<void(*)(int)>   (&foo),
+                static_cast<void(*)(double)>(&foo)};
+```
+
+This does work, but it can get quite tedious for member-function pointers, which have weird syntax as shown below:
+
+```
+struct bar
+{
+   void f() const;
+   void f(double);
+};
+
+void func2()
+{
+   bar b;
+   b.f();
+   b.f(3.142);
+};
+
+__calltrace__<2> ct{&func2,
+                static_cast<void(bar::*)() const>(&bar::f),
+                static_cast<void(bar::*)(double)>(&bar::f)};
+
+```
+
+To easen that this library provides a set of types that allow you to easier select overloaded functions. Please see the __reference__ for more details.
+
+
+[def fn [classref mw::test::fn fn]]
+[def mem_fn [classref mw::test::mem_fn mem_fn]]
+[def mem_fn_c [classref mw::test::mem_fn_c mem_fn_c]]
+
+```
+__calltrace__<4> ct{&func,
+                fn<void(int)>(&foo),      //Select by signature
+                fn<void(double)>(&foo),   //Select by signature
+                fn<void()>(&bar::f),      //Select by signature
+                mem_fn<>(&bar::f),        //Select by qualification
+                mem_fn_c<>(&bar::f),      //Select by qualification
+                mem_fn<void()>(&bar::f),        //Select by qualification and signature
+                mem_fn_c<void(double)>(&bar::f) //Select by qualification and signature
+                };
+
+```
+
+[endsect]
+
+[section:timestamp Adding Timestamp]
+
+When used with the dbg-runner the calltrace can add a timestamp to the output if the corresponding function is provided. Examples are given below. 
+
+[import ../example/timestamp.cpp]
+[import ../example/timestamp_c.c]
+
+[table:header_table Timestamp example
+    [[C++] [C]]
+    [[[timestamp_example]] [[timestamp_example_c]]]
+]
+
+
+[endsect]
+
+[endsect]

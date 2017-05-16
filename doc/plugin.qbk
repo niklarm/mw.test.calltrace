@@ -1,0 +1,42 @@
+[section:plugin Plugin]
+
+
+[section:default Default invocation]
+
+The invocation does look as follows:
+
+[teletype]
+
+``` 
+mw-dbg-runner --lib=mw-calltrace test.exe 
+``` 
+
+By default the plugin will output all the calltraces at initialization and deinitialization (including the result) and all the function calls while any
+calltrace is registered.
+
+[endsect]
+
+[section:args Arguments]
+
+This section describes the usage of the `dbg-runner`. We will assume that the command is available, though you might need to either use the absolute path or 
+add the path to the [@https://en.wikipedia.org/wiki/PATH_(variable) PATH] variable.
+
+Here's an overview of all parameters the calltrace adds: 
+
+
+[note Plugins can add other parameters]
+
+[teletype]
+[table:args Arguments
+[[Option] [Description] [Value type] [Default]]
+[[`--mw--calltrace-sink`]      [Set the sink to a file, it uses `stdout` when not set] [string] [['none]]]
+[[`--mw--calltrace-format`]    [The format of the output [hrf, json]]                  [string] [`hrf`]]
+[[`--mw--calltrace-all`]       [Output all function calls, by default only those traced are outputted.] [['bool switch]] [['none]]]
+[[`--mw--calltrace-timestamp`] [Try to use the timestamp, if available] [['bool switch]]  [['none]]]
+[[`--mw--calltrace-minimal`]   [Minimal will only output the results of calltraces, not function calls.] [multiple strings] [['none]]]
+[[`--mw--calltrace-depth`]     [The depth of the calltrace, if set it will skip function called deeper nested that this] [`int`] [['none]]]
+]
+
+[endsect]
+[endsect]
+[c++]

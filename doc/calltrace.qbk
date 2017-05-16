@@ -1,0 +1,18 @@
+[library mw.test.calltrace
+    [quickbook 1.6]
+    [authors [Morgenstern, Klemens David]]
+    [copyright 2016 Klemens D. Morgenstern]
+    [id calltrace]
+    [dirname calltrace]
+    [license Distributed under the Apache License, Version 2.0.
+        (See accompanying file or copy at
+        [@https://www.apache.org/licenses/LICENSE-2.0])
+    ]
+]
+
+[include introduction.qbk]
+[include tutorial.qbk]
+[include faq.qbk]
+
+[include plugin.qbk]
+[xinclude autodoc.xml] 

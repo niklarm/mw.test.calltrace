@@ -21,7 +21,16 @@
 #include <iostream>
 #include <climits>
 
+#if defined(MW_CALLTRACE_DOXYGEN)
+
+///Symbol to avoid intrumentation by the calltrace
+#define MW_NO_INSTRUMENT
+
+#else
+
 #define MW_NO_INSTRUMENT __attribute__((no_instrument_function))
+
+#endif
 
 namespace mw
 {
@@ -46,25 +55,30 @@ typedef detail::mw_timestamp_t timestamp_t;
 
 
 #else
+
 typedef mw_timestamp_t timestamp_t;
 
 timestamp_t timestamp() asm("mw_timestamp");
+
 #endif
 
 
+namespace detail
+{
 struct any_fn_t
 {
     constexpr any_fn_t() MW_NO_INSTRUMENT {};
 
     constexpr MW_NO_INSTRUMENT operator const void* () const {return nullptr;}
 };
+}
 
-///Type to declare a match to any function.
-constexpr static any_fn_t any_fn;
+///Helper value to declare a match to any function.
+constexpr static detail::any_fn_t any_fn;
 
 /** Convenience type to bind to any function with the given signature to pass to the calltrace.
  * \note This does not take qualifier overloads in member function into account.
- * \example
+ * \section fn_example Example
 \code{.cpp}
 void foo(int);
 void foo(double);
@@ -91,10 +105,10 @@ calltrace ct{&func,
              };
 
 \endcode
- *
- *
  */
 template<typename T> struct fn;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<typename Return, typename ... Args>
 struct fn<Return(Args...)>
@@ -141,9 +155,10 @@ struct fn<Return(Args...)>
 
 };
 
+#endif
 
 /** Helper type to bind to a member function, either any without const/volatile qualifier or with a specific signature.
-\example
+\section mem_fn_example Example
 \code{.cpp}
 struct my_class
 {
@@ -168,6 +183,8 @@ calltrace ct{&some_func,
 template<typename = void>
 struct mem_fn;
 
+#if !defined(MW_CALLTRACE_DOXYGEN)
+
 template<>
 struct mem_fn<void>
 {
@@ -180,7 +197,6 @@ struct mem_fn<void>
     template<typename Return, typename Class, typename ...Args>
     MW_NO_INSTRUMENT mem_fn(Return(Class::*ptr)(Args...) &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
-
 
 template<typename Return, typename ... Args>
 struct mem_fn<Return(Args...)>
@@ -195,11 +211,13 @@ struct mem_fn<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn(Return(Class::*ptr)(Args...) &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
-
+#endif
 
 ///Similar to \ref mw::test::mem_fn plus const qualification.
 template<typename = void>
 struct mem_fn_c;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_c<void>
@@ -228,9 +246,13 @@ struct mem_fn_c<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_c(Return(Class::*ptr)(Args...) const &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus volatile qualification.
 template<typename = void>
 struct mem_fn_v;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_v<void>
@@ -259,9 +281,13 @@ struct mem_fn_v<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_v(Return(Class::*ptr)(Args...) volatile &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus const volatile qualification.
 template<typename = void>
 struct mem_fn_cv;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_cv<void>
@@ -290,9 +316,13 @@ struct mem_fn_cv<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_cv(Return(Class::*ptr)(Args...) const volatile &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus lvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_lvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_lvalue<void>
@@ -313,9 +343,13 @@ struct mem_fn_lvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_lvalue(Return(Class::*ptr)(Args...) &) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus const and lvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_c_lvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_c_lvalue<void>
@@ -336,9 +370,13 @@ struct mem_fn_c_lvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_c_lvalue(Return(Class::*ptr)(Args...) const &) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus volatile and lvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_v_lvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_v_lvalue<void>
@@ -359,9 +397,13 @@ struct mem_fn_v_lvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_v_lvalue(Return(Class::*ptr)(Args...) volatile &) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus const volatile and lvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_cv_lvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_cv_lvalue<void>
@@ -382,9 +424,13 @@ struct mem_fn_cv_lvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_cv_lvalue(Return(Class::*ptr)(Args...) const volatile &) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus rvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_rvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_rvalue<void>
@@ -405,9 +451,13 @@ struct mem_fn_rvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_rvalue(Return(Class::*ptr)(Args...) &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus const and rvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_c_rvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_c_rvalue<void>
@@ -428,9 +478,13 @@ struct mem_fn_c_rvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_c_rvalue(Return(Class::*ptr)(Args...) const &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus volatile and rvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_v_rvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_v_rvalue<void>
@@ -451,9 +505,13 @@ struct mem_fn_v_rvalue<Return(Args...)>
     MW_NO_INSTRUMENT mem_fn_v_rvalue(Return(Class::*ptr)(Args...) volatile &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
 
+#endif
+
 ///Similar to \ref mw::test::mem_fn plus const volatile and rvalue qualification. \note Doesn't work with a gcc lower than 6.
 template<typename = void>
 struct mem_fn_cv_rvalue;
+
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
 template<>
 struct mem_fn_cv_rvalue<void>
@@ -473,6 +531,7 @@ struct mem_fn_cv_rvalue<Return(Args...)>
     template<typename Class>
     MW_NO_INSTRUMENT mem_fn_cv_rvalue(Return(Class::*ptr)(Args...) const volatile &&) : ptr(reinterpret_cast<const void*>(ptr)) {}
 };
+
 
 namespace detail
 {
@@ -638,11 +697,13 @@ namespace detail
 
 }
 
+#endif
+
 /**The actual calltrace implementation.
  *
  * \tparam Size The number of the functions inside the trace body passed.
 
-\example
+\section calltrace_example Example
 \code{.cpp}
 void bar(std::vector<int> & v);
 void foo()
@@ -683,10 +744,10 @@ public:
      * \param func The function to trace
      * \param repeat The times the calltrace shall be repeated
      * \param skip The amount of calls that shall be ignore before activating the calltrace
-     * \param Args... The expected function calls.
+     * \param args The expected function calls.
      */
     template<typename Func, typename ...Args>
-    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, int skip, Args ... args)
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, int skip, Args... args)
         : mw_calltrace_{detail::func_cast(func), _funcs, static_cast<int>(Size), repeat, skip, skip, 0, 0, 0, -1},
           _funcs{detail::func_cast(args)...},
           _inited{__mw_set_calltrace(this) != 0}
@@ -698,14 +759,14 @@ public:
     /**Construct a calltrace from the given function, including a repeat count, but no skip.
      * \param func The function to trace
      * \param repeat The times the calltrace shall be repeated
-     * \param Args... The expected function calls.
+     * \param args  The expected function calls.
      */
     template<typename Func, typename ...Args>
-    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, Args ... args) : calltrace(func, repeat, 0, args...) {}
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, Args... args) : calltrace(func, repeat, 0, args...) {}
 
     /**Construct a calltrace from the given function, without a repeat count and skip.
      * \param func The function to trace
-     * \param Args... The expected function calls.
+     * \param args The expected function calls.
      */
     template<typename Func, typename ...Args>
     inline MW_NO_INSTRUMENT calltrace(Func func, Args ... args) : calltrace(func, 0, 0, args...) {};

@@ -1,0 +1,47 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+
+skinparam sequence {
+    ActorBorderColor DeepSkyBlue
+    ArrowColor black
+    
+    LifeLineBorderColor DarkGray
+    ParticipantBackgroundColor  LightGray
+    ParticipantBorderColor black
+    BoxBorderColor black
+}
+
+
+activate test_func_ext
+
+test_func_ext->func : activate ct
+
+activate func 
+
+func->foo : traced by ct\nactivate ct_foo
+activate foo
+  foo->foo2 : traced by ct_foo
+  activate foo2
+  foo<-foo2 : traced by ct_foo
+  deactivate foo2
+func<- foo : traced by ct\ndeactive ct_foo
+deactivate foo
+
+func->bar : traced by ct\nactivate ct_bar
+  activate bar
+  bar->bar2 : traced by ct_bar
+  activate bar2
+  bar<-bar2 : traced by ct_bar
+  deactivate bar2
+func<-bar : traced by ct\ndeactivate ct_bar
+deactivate bar
+
+test_func_ext<-func : deactivate ct
+deactivate func
+
+deactivate test_func_ext
+
+
+
+
+@enduml

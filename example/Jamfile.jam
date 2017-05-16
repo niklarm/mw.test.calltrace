@@ -1,0 +1,16 @@
+project : requirements
+  <include>../include
+;
+
+import testing ;
+
+compile intro.cpp ;
+compile start_c.c ;
+compile start.cpp ;
+compile repeat.cpp ;
+compile repeat_c.c ;
+
+compile timestamp.cpp ;
+compile timestamp_c.c ;
+
+compile wildcard.cpp ;

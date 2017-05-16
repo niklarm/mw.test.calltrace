@@ -1,0 +1,28 @@
+[section:introduction Introduction]
+
+`mw.test.calltrace` is a light-weight calltrace library that allows to validate call sequences.   
+
+* call tracing at runtime
+* detailed output through the dbg-runner
+* human-readable-format or json output
+* C and C++ implementation
+
+Here's a simple example of a test with `mw.test.backend`:
+
+[def mw/test/calltrace.hpp [headerref mw/test/calltrace.hpp mw/test/calltrace.hpp]]
+[def mw::test::calltrace   [classref mw::test::calltrace mw::test::calltrace]]
+
+
+[import ../example/intro.cpp]
+[intro]
+
+Using the `mw.gdb.runner` we can launch the test on a remote arm device, which would look like this:
+
+    mw-gdb-runner --debug --gdb=arm-none-eabi-gdb --exe=test.elf --lib mw-calltrace mw-exitcode --remote localhost:3333 --other "openocd -f ..\scripts\interface\stlink-v2.cfg -f ..\scripts\target\stm32f4x.cfg -c init"
+
+Which will give us an exit-code unqual to zero if the call sequence doesn't match.
+
+
+[note For support or feature requests, feel free to write us an [@mailto:info@mw-sc.de E-Mail]]
+
+[endsect]

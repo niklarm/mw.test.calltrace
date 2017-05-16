@@ -1,0 +1,107 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+
+skinparam sequence {
+    ActorBorderColor DeepSkyBlue
+    ArrowColor black
+    
+    LifeLineBorderColor DarkGray
+    ParticipantBackgroundColor  LightGray
+    ParticipantBorderColor black
+    BoxBorderColor black
+}
+
+
+activate test_func
+
+test_func->func : activate ct, ct_start
+
+activate func 
+
+func->foo : traced by ct, ct_start
+activate foo
+func<- foo : traced by ct, ct_start
+deactivate foo
+
+func->bar : traced by ct, ct_start
+activate bar
+func<-bar : traced by ct, ct_start
+deactivate bar
+
+test_func<-func : deactivate ct, ct_start
+
+deactivate func
+
+
+test_func->func : activate ct, ct_start
+activate func 
+
+func->foo : traced by ct, ct_start
+activate foo
+func<- foo : traced by ct, ct_start
+deactivate foo
+
+func->bar : traced by ct, ct_start
+activate bar
+func<-bar : traced by ct, ct_start
+deactivate bar
+
+test_func<-func : deactivate ct, ct_start
+deactivate func
+
+
+
+test_func->func : activate ct, ct_middle
+activate func 
+
+func->foo : traced by ct, ct_middle
+activate foo
+func<- foo : traced by ct, ct_middle
+deactivate foo
+
+func->bar2 : traced by ct, ct_middle
+activate bar2
+func<-bar2 : traced by ct, ct_middle
+deactivate bar2
+
+test_func<-func : deactivate ct, ct_middle
+deactivate func
+
+
+test_func->func : activate ct, ct_middle
+activate func
+
+func->foo : traced by ct, ct_middle
+activate foo
+func<- foo : traced by ct, ct_middle
+deactivate foo
+
+func->bar2 : traced by ct, ct_middle
+activate bar2
+func<-bar2 : traced by ct, ct_middle
+deactivate bar2
+
+test_func<-func : deactivate ct, ct_middle
+deactivate func
+
+
+test_func->func : activate ct, ct_end
+activate func
+
+func->foo : traced by ct, ct_end
+activate foo
+func<- foo : traced by ct, ct_end
+deactivate foo
+
+func->bar : traced by ct, ct_end
+activate bar
+func<-bar : traced by ct, ct_end
+deactivate bar
+
+test_func<-func : deactivate ct, ct_end
+deactivate func
+
+
+deactivate test_func
+
+@enduml

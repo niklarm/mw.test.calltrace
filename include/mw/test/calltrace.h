@@ -20,9 +20,11 @@
 #include <limits.h>
 #include <mw/test/calltrace.def>
 
+#if !defined(MW_CALLTRACE_DOXYGEN)
 
-///Symbol to avoid intrumentation by the calltrace
 #define MW_NO_INSTRUMENT __attribute__((no_instrument_function))
+
+#endif
 
 #if defined(MW_CALLTRACE_DOXYGEN)
 
@@ -33,8 +35,9 @@ mw_timestamp_t mw_timestamp();
 typedef detail::mw_timestamp_t mw_timestamp_t;
 
 
-///The type carrying the necessary information for the calltrace
-struct mw_calltrace_
+/**The type carrying the necessary information for the calltrace.
+ */
+struct mw_calltrace
 {
     ///The function which's subcalls are trace.
     const void * fn;
@@ -57,14 +60,12 @@ typedef struct mw_calltrace_ mw_calltrace;
 
 #endif
 
-/** This function initializes and registers a calltrace.
- * Note that there is a limited amount of calltraces that can be added. The default value is 16, but can be changed by defining
- * `MW_CALLTRACE_STACK_SIZE` while compiling calltrace.
- *
- * @param ct A pointer to the calltrace to be initialized.
- * @return A value differnt from zero if it succeeded.
- *
- @example
+/**
+ This function initializes and registers a calltrace.
+ Note that there is a limited amount of calltraces that can be added. The default value is 16, but can be changed by defining
+ `MW_CALLTRACE_STACK_SIZE` while compiling calltrace.
+
+ \section mw_calltrace_init_example Example
  \code{.cpp}
 
  #include <cassert>
@@ -85,6 +86,10 @@ typedef struct mw_calltrace_ mw_calltrace;
     return 0;
  }
  \endcode
+
+ \param ct A pointer to the calltrace to be initialized.
+ \return A value differnt from zero if it succeeded.
+
  */
 static int MW_NO_INSTRUMENT mw_calltrace_init(mw_calltrace * ct)
 {

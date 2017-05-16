@@ -1,0 +1,31 @@
+[section:faq Frequently Asked Questions]
+
+[section:platforms Which platforms are supported?]
+
+This currently only support gcc and clang. It is however quite easy to add more compiler support if function similar to `__cyg_profile_func_enter`
+or `__cyg_profile_func_exit` are available.
+
+
+[section:test Why is this not part of `mw.test.backend`?]
+
+To make this tool possible to use with other unit testing frameworks. This might be a bit annoying with the jsons being seperate, but it allows
+the usage of simple assertion which every test framework has.
+
+[endsect]
+
+[section:coverage_sep Can I use a formatted string for profiling?]
+
+Not without modifying the implementation. The idea is to get the timestamp as fast as possible, which is why it was assumed, that having a string formatted 
+would be too inefficient. It would however be a feature that could be added in the future.  
+
+[endsect]
+
+[section:request I want feature X and support for platform Y - why isn't this available?]
+
+As everybody we are constraint by time, so we do only implement what is requested. Please feel free to contact us for such requests,
+you find our contacts [@http://www.mw-sc.de/contact here]. 
+
+[endsect]
+
+[endsect]
+[endsect]
