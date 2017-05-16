@@ -63,9 +63,10 @@ after_success:
     - git clone https://github.com/linux-test-project/lcov.git lcov_dir
     - GCOV_VERSION="--gcov-tool gcov-6"
     - LCOV="$MW_TEST/calltrace/test/lcov_dir/bin/lcov $GCOV_VERSION --compat-libtool"
-    - $LCOV --directory ./coverals/ --base-directory ./ --capture --output-file ./coverals/coverage.info
-#    - $LCOV --remove ./coverals/coverage.info ../test/* boost* /usr* -o ./coverals/coverage.info
+    - $LCOV --directory ./coverals --base-directory ./ --capture --output-file ./coverals/coverage.info
+    - $LCOV --remove ./coverals/coverage.info ../test/* boost* /usr* -o ./coverals/coverage.info
 
     # Sending data to Coveralls
     - gem install coveralls-lcov
-    - coveralls-lcov ./coverals/coverage.info
+    # https://github.com/okkez/coveralls-lcov/issues/2
+    - coveralls-lcov  --source-encoding=ISO-8859-1 ./coverals/coverage.info
