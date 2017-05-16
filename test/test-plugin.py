@@ -75,7 +75,7 @@ with open(hrf_cmp_file) as f:
     i = 1
     for out, cmp in zip(plugin_test_out, hrf_cmp):
         if (out != cmp):
-            print(hrf_cmp_file + '(' + str(i) + ') :Mismatch in comparison : "' + out + '" != "' + cmp + '"')
+            print(hrf_cmp_file + '(' + str(i) + '): Mismatch in comparison : "' + out + '" != "' + cmp + '"')
             errored = True
         i+=1
 
@@ -85,7 +85,7 @@ with open(hrf_cmp_ts_file) as f:
     i = 0
     for out, cmp in zip(plugin_test_ts_out, hrf_cmp_ts):
         if (out != cmp):
-            print(hrf_cmp_ts_file + '(' + str(i) + ')Mismatch in comparison : "' + out + '" != "' + cmp + '"')
+            print(hrf_cmp_ts_file + '(' + str(i) + '): Mismatch in comparison : "' + out + '" != "' + cmp + '"')
             errored = True;
         i+=1
 
