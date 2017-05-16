@@ -56,13 +56,13 @@ script:
 after_success:
     # Copying Coveralls data to a separate folder
     - mkdir -p ./coverals
-    - find ../../bin.mw/backend -name *.gcda -exec cp "{}" ./coverals/ \;
-    - find ../../bin.mw/backend -name *.gcno -exec cp "{}" ./coverals/ \;
+    - find ../../bin.mw/calltrace -name *.gcda -exec cp "{}" ./coverals/ \;
+    - find ../../bin.mw/calltrace -name *.gcno -exec cp "{}" ./coverals/ \;
 
     # Preparing Coveralls data by changind data format to a readable one
     - git clone https://github.com/linux-test-project/lcov.git lcov_dir
     - GCOV_VERSION="--gcov-tool gcov-6"
-    - LCOV="$MW_TEST/backend/test/lcov_dir/bin/lcov $GCOV_VERSION"
+    - LCOV="$MW_TEST/calltrace/test/lcov_dir/bin/lcov $GCOV_VERSION"
     - $LCOV --directory ./coverals/ --base-directory ./ --capture --output-file ./coverals/coverage.info
     - $LCOV --remove ./coverals/coverage.info ../test/* boost* /usr* -o ./coverals/coverage.info
 
