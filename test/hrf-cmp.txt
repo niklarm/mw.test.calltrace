@@ -17,7 +17,7 @@ mw.calltrace.error overflow in calltrace --hex-- with size 1 at [--hex--:bar()]
 mw.calltrace entering function [--hex--:dummy_vector<int>::size() const]
 mw.calltrace  exiting function [--hex--:dummy_vector<int>::size() const]
 mw.calltrace  exiting function [--hex--:bar()]
-mw.calltrace  exiting function [--hex--:foobar()], at test\plugin-test.cpp(61)
+mw.calltrace  exiting function [--hex--:foobar()], at plugin-test.cpp(61)
 mw.calltrace.error incomplete in calltrace --hex-- stopped 2/3
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 2 errors
