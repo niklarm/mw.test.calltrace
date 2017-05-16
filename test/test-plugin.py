@@ -74,7 +74,7 @@ with open(hrf_cmp_file) as f:
     hrf_cmp = f.read().splitlines()
     i = 1
     for out, cmp in zip(plugin_test_out, hrf_cmp):
-        if (out != cmp):
+        if not out.startswith(cmp):
             print(hrf_cmp_file + '(' + str(i) + '): Mismatch in comparison : "' + out + '" != "' + cmp + '"')
             errored = True
         i+=1
@@ -84,7 +84,7 @@ with open(hrf_cmp_ts_file) as f:
     hrf_cmp_ts = f.read().splitlines()
     i = 0
     for out, cmp in zip(plugin_test_ts_out, hrf_cmp_ts):
-        if (out != cmp):
+        if not out.startswith(cmp):
             print(hrf_cmp_ts_file + '(' + str(i) + '): Mismatch in comparison : "' + out + '" != "' + cmp + '"')
             errored = True;
         i+=1
