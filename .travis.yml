@@ -15,7 +15,6 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - python-yaml
-    - valgrind
     - gcc-6
     - g++-6
     - gdb
@@ -52,7 +51,7 @@ before_script:
     - cp user-config.travis.jam user-config.jam
     - cd ./calltrace/test
 script:
-- $BOOST/b2 -sBOOST_ROOT=$BOOST define=MW_TRAVISCI_BUILD toolset=gcc-6 linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=. -j4 address-model=$ADDRESS_MODEL testing.launcher=valgrind valgrind=on cxxflags=--coverage cflags=--coverage linkflags=--coverage 
+- $BOOST/b2 -sBOOST_ROOT=$BOOST define=MW_TRAVISCI_BUILD toolset=gcc-6 linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=. -j4 address-model=$ADDRESS_MODEL cxxflags=--coverage cflags=--coverage linkflags=--coverage 
 after_success:
     # Copying Coveralls data to a separate folder
     - mkdir -p ./coverals
