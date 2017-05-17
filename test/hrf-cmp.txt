@@ -1,9 +1,10 @@
 mw.calltrace.error timestamp not available
-mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()], [--hex--:bar()]}
-mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:bar()], [--hex--:foo()]}
+mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()], [--hex--:bar(bool)], [--hex--:foo()], [--hex--:bar(bool)]}
+mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:bar(bool)], [--hex--:foo()], [--hex--:bar(bool)], [--hex--:foo()]}
 mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()]}
-mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()], [--hex--:bar()], [--hex--:foo()]}
-mw.calltrace   registered calltrace --hex-- [--hex--:bar()]: {[--hex--:dummy_vector<int>::size() const]}
+mw.calltrace   registered calltrace --hex-- [--hex--:foobar()]: {[--hex--:foo()], [--hex--:bar(bool)], [--hex--:foo()], [--hex--:bar(bool)], [--hex--:foo()]}
+mw.calltrace   registered calltrace --hex-- [--hex--:bar(bool)]: {}
+mw.calltrace   registered calltrace --hex-- [--hex--:bar(bool)]: {[--hex--:dummy_vector<int>::size() const]}
 mw.calltrace   registered calltrace --hex-- [--hex--:foo()]: {[--hex--:dummy_vector<int>::push_back(int&&) const]}
 mw.calltrace entering function [--hex--:foobar()]
 mw.calltrace entering function [--hex--:foo()]
@@ -11,17 +12,29 @@ mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:foo()] != [--hex--:fo
 mw.calltrace entering function [--hex--:dummy_vector<int>::push_back(int&&) const]
 mw.calltrace  exiting function [--hex--:dummy_vector<int>::push_back(int&&) const]
 mw.calltrace  exiting function [--hex--:foo()]
-mw.calltrace entering function [--hex--:bar()]
-mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:bar()] != [--hex--:foobar()]}
-mw.calltrace.error overflow in calltrace --hex-- with size 1 at [--hex--:bar()]
+mw.calltrace entering function [--hex--:bar(bool)]
+mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:bar(bool)] != [--hex--:foobar()]}
+mw.calltrace.error overflow in calltrace --hex-- with size 1 at [--hex--:bar(bool)]
+mw.calltrace  exiting function [--hex--:bar(bool)]
+mw.calltrace entering function [--hex--:foo()]
+mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:foo()] != [--hex--:foobar()]}
+mw.calltrace.error overflow in calltrace --hex-- with size 1 at [--hex--:foo()]
+mw.calltrace entering function [--hex--:dummy_vector<int>::push_back(int&&) const]
+mw.calltrace  exiting function [--hex--:dummy_vector<int>::push_back(int&&) const]
+mw.calltrace  exiting function [--hex--:foo()]
+mw.calltrace entering function [--hex--:bar(bool)]
+mw.calltrace.error mismatch in calltrace --hex-- {[--hex--:bar(bool)] != [--hex--:foobar()]}
+mw.calltrace.error overflow in calltrace --hex-- with size 1 at [--hex--:bar(bool)]
 mw.calltrace entering function [--hex--:dummy_vector<int>::size() const]
 mw.calltrace  exiting function [--hex--:dummy_vector<int>::size() const]
-mw.calltrace  exiting function [--hex--:bar()]
+mw.calltrace  exiting function [--hex--:bar(bool)]
 mw.calltrace  exiting function [--hex--:foobar()]
-mw.calltrace.error incomplete in calltrace --hex-- stopped 2/3
+mw.calltrace.error incomplete in calltrace --hex-- stopped 4/5
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors
-mw.calltrace unregistered calltrace --hex-- executed 1 times, with 2 errors
-mw.calltrace unregistered calltrace --hex-- executed 1 times, with 1 errors
+mw.calltrace unregistered calltrace --hex-- executed 1 times, with 4 errors
+mw.calltrace unregistered calltrace --hex-- executed 1 times, with 3 errors
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 1 errors
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors
+mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors
+mw.calltrace unregistered calltrace --hex-- executed 2 times, with 0 errors
 mw.calltrace unregistered calltrace --hex-- executed 1 times, with 0 errors

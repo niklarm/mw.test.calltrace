@@ -49,6 +49,8 @@ void foobar() {foo(); bar();}
 TEST_CASE(simple)
 {
 
+    mw_calltrace ct_empty = {&foo, 0, 0, 0, 0};
+
     const void * ct_arr[] = {&foo, &bar};
     mw_calltrace ct = {&foobar, ct_arr, 2, 0, 0};
     const void * ct_fail_arr[] = {&bar, &foo};
@@ -59,6 +61,8 @@ TEST_CASE(simple)
 
     const void * ct_long_arr[] = {&foo, &bar, &foo};
     mw_calltrace ct_long = {&foobar, ct_long_arr, 3, 0, 0};
+
+    CHECK(mw_calltrace_init(&ct_empty));
 
     CHECK(mw_calltrace_init(&ct));
     CHECK(mw_calltrace_init(&ct_fail));
@@ -78,6 +82,10 @@ TEST_CASE(simple)
 
     foobar();
     unwatched();
+
+    CHECK(mw_calltrace_success(&ct_empty));
+    CHECK(mw_calltrace_complete(&ct_empty));
+    CHECK(!ct_empty.errored);
 
     CHECK(mw_calltrace_success(&ct));
     CHECK(mw_calltrace_complete(&ct));
@@ -99,6 +107,8 @@ TEST_CASE(simple)
     CHECK(mw_calltrace_deinit(&ct_long));
     CHECK(mw_calltrace_deinit(&ct_fail));
     CHECK(mw_calltrace_deinit(&ct));
+    CHECK(mw_calltrace_deinit(&ct_empty));
+
 
 }
 

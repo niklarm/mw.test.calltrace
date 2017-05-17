@@ -31,6 +31,7 @@ void foobar() {foo(); bar();}
 
 BOOST_AUTO_TEST_CASE(simple)
 {
+    calltrace<0> ct_empty(&foo);
 
     calltrace<2> ct      (&foobar, &foo, &bar);
     calltrace<2> ct_fail (&foobar, &bar, &foo);
@@ -67,6 +68,8 @@ BOOST_AUTO_TEST_CASE(simple)
     BOOST_CHECK(!ct_long);
     BOOST_CHECK(ct_long.errored());
     BOOST_CHECK(ct_long.complete());
+
+    BOOST_CHECK(ct_empty);
 }
 
 void foo_switch(bool switch_)

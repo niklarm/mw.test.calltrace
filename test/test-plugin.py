@@ -60,6 +60,7 @@ errored = False
 plugin_test_ts_out = subprocess.check_output([runner, "--exe", plugin_test_ts, "--lib", calltrace, "--mw-calltrace-timestamp"]).decode()
 plugin_test_out    = subprocess.check_output([runner, "--exe", plugin_test,    "--lib", calltrace, "--mw-calltrace-timestamp"]).decode()
 
+
 import re
 
 hex_regex = re.compile(r"@0x[0-9A-Za-z]+")
@@ -82,7 +83,7 @@ with open(hrf_cmp_file) as f:
 
 with open(hrf_cmp_ts_file) as f:
     hrf_cmp_ts = f.read().splitlines()
-    i = 0
+    i = 1
     for out, cmp in zip(plugin_test_ts_out, hrf_cmp_ts):
         if not out.startswith(cmp):
             print(hrf_cmp_ts_file + '(' + str(i) + '): Mismatch in comparison : "' + out + '" != "' + cmp + '"')
@@ -117,23 +118,24 @@ compare(err[3]["mode"], "set")
 compare(err[4]["mode"], "set")
 compare(err[5]["mode"], "set")
 compare(err[6]["mode"], "set")
+compare(err[7]["mode"], "set")
 
 def get_ptr(Value):
     return Value["calltrace"]["location"]
 
-addr = [get_ptr(err[1]), get_ptr(err[2]), get_ptr(err[3]), get_ptr(err[4]), get_ptr(err[5]), get_ptr(err[6])]
+addr = [get_ptr(err[1]), get_ptr(err[2]), get_ptr(err[3]), get_ptr(err[4]), get_ptr(err[5]), get_ptr(err[6]), get_ptr(err[7])]
 
 
 
-compare(err[7] ["mode"], "error")
-compare(err[8] ["mode"], "error")
-compare(err[9] ["mode"], "error")
-compare(err[10]["mode"], "error")
+compare(err[8]  ["mode"], "error")
+compare(err[9]  ["mode"], "error")
+compare(err[10] ["mode"], "error")
+compare(err[11] ["mode"], "error")
 
-compare(err[7] ["type"], "mismatch")
 compare(err[8] ["type"], "mismatch")
-compare(err[9] ["type"], "overflow")
-compare(err[10]["type"], "incomplete")
+compare(err[9] ["type"], "mismatch")
+compare(err[10] ["type"], "overflow")
+compare(err[11]["type"], "incomplete")
 
 compare(get_ptr(err[11]), addr[0])
 compare(get_ptr(err[12]), addr[1])

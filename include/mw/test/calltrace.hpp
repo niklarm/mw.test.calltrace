@@ -740,6 +740,32 @@ class calltrace : mw_calltrace_
     const void*  _funcs[Size];
     bool _inited;
 public:
+    /**Construct an empty (i.e. asserting no calls) calltrace from the given function, including a repeat count and a skip.
+     * \param func The function to trace
+     * \param repeat The times the calltrace shall be repeated
+     * \param skip The amount of calls that shall be ignore before activating the calltrace
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, int skip)
+        : mw_calltrace_{detail::func_cast(func), _funcs, static_cast<int>(Size), repeat, skip, skip, 0, 0, 0, -1},
+          _funcs{nullptr},
+          _inited{__mw_set_calltrace(this) != 0}
+    {
+    }
+    /**Construct an empty calltrace from the given function, including a repeat count, but no skip.
+     * \param func The function to trace
+     * \param repeat The times the calltrace shall be repeated
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat) : calltrace(func, repeat, 0) {}
+
+    /**Construct an empty calltrace from the given function, without a repeat count and skip.
+     * \param func The function to trace
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func) : calltrace(func, 0, 0) {};
+
+
     /**Construct a calltrace from the given function, including a repeat count and a skip
      * \param func The function to trace
      * \param repeat The times the calltrace shall be repeated
@@ -796,6 +822,66 @@ public:
         __mw_reset_calltrace(this);
     }
 };
+
+
+///Specialization for an empty calltrace
+template<>
+class calltrace<0> : mw_calltrace_
+{
+    const void*  _funcs = nullptr;
+    bool _inited;
+public:
+    /**Construct an empty (i.e. asserting no calls) calltrace from the given function, including a repeat count and a skip.
+     * \param func The function to trace
+     * \param repeat The times the calltrace shall be repeated
+     * \param skip The amount of calls that shall be ignore before activating the calltrace
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat, int skip)
+        : mw_calltrace_{detail::func_cast(func), &_funcs, 0, repeat, skip, skip, 0, 0, 0, -1},
+          _inited{__mw_set_calltrace(this) != 0}
+    {
+    }
+    /**Construct an empty calltrace from the given function, including a repeat count, but no skip.
+     * \param func The function to trace
+     * \param repeat The times the calltrace shall be repeated
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func, int repeat) : calltrace(func, repeat, 0) {}
+
+    /**Construct an empty calltrace from the given function, without a repeat count and skip.
+     * \param func The function to trace
+     */
+    template<typename Func>
+    inline MW_NO_INSTRUMENT calltrace(Func func) : calltrace(func, 0, 0) {};
+
+    ///Check if the calltrace was inited, i..e added to the calltrace list.
+    inline bool MW_NO_INSTRUMENT inited  () const {return _inited;}
+    ///Check if the calltrace had an error occur.
+    inline bool MW_NO_INSTRUMENT errored () const {return mw_calltrace_::errored != 0;}
+    /**Check if the calltrace is completed, without checking the error count.
+     * The behaviour depends on the repeat setting of the calltrace.
+     * If the calltrace is set to repeat n-times it has to be at least repeated once,
+     * while any other number will require the calltrace to be repeated exactly as set.
+     */
+    inline bool MW_NO_INSTRUMENT complete() const
+    {
+        bool rep_res = repeat == 0 ? (repeated > 0) : (repeated >= repeat);
+        return (current_position == 0) && rep_res;
+    }
+    ///Check if the calltrace was succesful, i.e. inited, completed and did not err.
+    inline bool MW_NO_INSTRUMENT success () const {return complete() && !errored() && inited();}
+    ///Convenience overload for success.
+    inline MW_NO_INSTRUMENT operator bool() const {return success();}
+
+    ///Destructor, removes the calltrace from the list
+    MW_NO_INSTRUMENT ~calltrace()
+    {
+        __mw_reset_calltrace(this);
+    }
+};
+
+
 
 #pragma GCC diagnostic pop
 
