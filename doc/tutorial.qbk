@@ -187,6 +187,8 @@ When used with the dbg-runner the calltrace can add a timestamp to the output if
     [[[timestamp_example]] [[timestamp_example_c]]]
 ]
 
+[important The C++ example explicitly disable the calltrace, because the inlined functions could be traced as well. C does not need to do that.]
+[note The plugin can also do this through the `dbg-runner` when `--mw-calltrace-manual-disable` is passed.]
 
 [endsect]
 
