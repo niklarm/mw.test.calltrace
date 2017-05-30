@@ -20,9 +20,17 @@
 
 #if defined(MW_TEST_TIMESTAMP)
 
+extern "C" { extern int __mw_calltrace_size; }
+
 mw::test::mw_timestamp_t mw::test::timestamp()
 {
-    return std::chrono::system_clock::now().time_since_epoch().count();
+    int sz = __mw_calltrace_size;
+    __mw_calltrace_size = 0;
+
+    mw::test::mw_timestamp_t ts = std::chrono::system_clock::now().time_since_epoch().count();
+
+    __mw_calltrace_size = sz;
+    return ts;
 }
 
 #endif

@@ -42,6 +42,7 @@ std::string format;
 bool log_all = false;
 bool profile = false;
 bool minimal = false;
+bool manual_dis = false;
 int ct_depth = -1;
 
 
@@ -206,11 +207,15 @@ struct mw_calltrace : break_point
         if (!profile || !timestamp_available)
             return boost::none;
 
+        std::string ct_size;
 
 
-        fr.disable(*this);
-        auto ct_size = fr.print("__mw_calltrace_size").value;
-        fr.set("__mw_calltrace_size", "0");
+        if (manual_dis)
+        {
+            fr.disable(*this);
+            ct_size = fr.print("__mw_calltrace_size").value;
+            fr.set("__mw_calltrace_size", "0");
+        }
 
         std::string value;
         try {
@@ -222,8 +227,13 @@ struct mw_calltrace : break_point
             data_sink->timestamp_unavailable();
             timestamp_available = false;
         }
-        fr.set("__mw_calltrace_size", ct_size);
-        fr.enable(*this);
+
+        if (manual_dis)
+        {
+            fr.set("__mw_calltrace_size", ct_size);
+            fr.enable(*this);
+
+        }
 
         if (value.empty())
             return boost::none;
@@ -280,6 +290,7 @@ void mw_dbg_setup_options(boost::program_options::options_description & op)
 {
     namespace po = boost::program_options;
     op.add_options()
+                   ("mw-calltrace-manual-disable", po::bool_switch(&manual_dis), "manually disabling for the timestamp")
                    ("mw-calltrace-sink",      po::value<string>(&sink_file),  "test data sink")
                    ("mw-calltrace-format",    po::value<string>(&format),     "format [hrf, json]")
                    ("mw-calltrace-all",       po::bool_switch(&log_all),      "log all calls")
