@@ -22,7 +22,7 @@
 
 extern "C" { extern int __mw_calltrace_size; }
 
-mw::test::mw_timestamp_t mw::test::timestamp()
+mw::test::mw_timestamp_t __attribute__((no_instrument_function)) mw::test::timestamp()
 {
     int sz = __mw_calltrace_size;
     __mw_calltrace_size = 0;

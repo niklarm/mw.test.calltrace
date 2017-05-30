@@ -232,7 +232,6 @@ struct mw_calltrace : break_point
         {
             fr.set("__mw_calltrace_size", ct_size);
             fr.enable(*this);
-
         }
 
         if (value.empty())
