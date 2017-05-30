@@ -269,7 +269,7 @@ void mw_dbg_setup_bps(vector<unique_ptr<mw::debug::break_point>> & bps)
     {
         std::string condition;
         if (ct_depth >= 0)
-            condition = "ct_depth <= " + std::to_string(ct_depth);
+            condition = "__mw_calltrace_depth <= " + std::to_string(ct_depth);
 
         if (!log_all)
         {
@@ -278,7 +278,7 @@ void mw_dbg_setup_bps(vector<unique_ptr<mw::debug::break_point>> & bps)
             else
                 condition = "(" + condition + ") &&  (__mw_calltrace_size > 0)";
         }
-        bps.back()->set_condition("__mw_calltrace_size > 0");
+        bps.back()->set_condition(condition);
     }
 
 
