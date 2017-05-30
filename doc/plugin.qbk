@@ -29,12 +29,12 @@ Here's an overview of all parameters the calltrace adds:
 [teletype]
 [table:args Arguments
 [[Option] [Description] [Value type] [Default]]
-[[`--mw--calltrace-sink`]      [Set the sink to a file, it uses `stdout` when not set] [string] [['none]]]
-[[`--mw--calltrace-format`]    [The format of the output [hrf, json]]                  [string] [`hrf`]]
-[[`--mw--calltrace-all`]       [Output all function calls, by default only those traced are outputted.] [['bool switch]] [['none]]]
-[[`--mw--calltrace-timestamp`] [Try to use the timestamp, if available] [['bool switch]]  [['none]]]
-[[`--mw--calltrace-minimal`]   [Minimal will only output the results of calltraces, not function calls.] [multiple strings] [['none]]]
-[[`--mw--calltrace-depth`]     [The depth of the calltrace, if set it will skip function called deeper nested that this] [`int`] [['none]]]
+[[`--mw-calltrace-sink`]      [Set the sink to a file, it uses `stdout` when not set] [string] [['none]]]
+[[`--mw-calltrace-format`]    [The format of the output [hrf, json]]                  [string] [`hrf`]]
+[[`--mw-calltrace-all`]       [Output all function calls, by default only those traced are outputted.] [['bool switch]] [['none]]]
+[[`--mw-calltrace-timestamp`] [Try to use the timestamp, if available] [['bool switch]]  [['none]]]
+[[`--mw-calltrace-minimal`]   [Minimal will only output the results of calltraces, not function calls.] [multiple strings] [['none]]]
+[[`--mw-calltrace-depth`]     [The depth of the calltrace, if set it will skip function called deeper nested that this] [`int`] [['none]]]
 ]
 
 [endsect]

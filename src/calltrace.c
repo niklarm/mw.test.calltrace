@@ -22,10 +22,10 @@ enum type_t
     mw_enter, mw_exit, mw_set, mw_reset
 };
 
-void __mw_profile(enum type_t type, void* this_fn, void *call_site) __attribute__((no_instrument_function, noinline));
-void __mw_profile(enum type_t type, void* this_fn, void *call_site)
+void __mw_profile(enum type_t type __attribute__((unused)), void* this_fn __attribute__((unused)), void *call_site __attribute__((unused))) __attribute__((no_instrument_function));
+void __mw_profile(enum type_t type __attribute__((unused)), void* this_fn __attribute__((unused)), void *call_site __attribute__((unused)))
 {
-    //for the bp
+    asm("");
 }
 
 #if defined(ULLONG_MAX)
