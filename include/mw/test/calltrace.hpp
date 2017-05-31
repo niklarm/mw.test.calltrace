@@ -18,7 +18,6 @@
 #define MW_TEST_CALLTRACE_HPP_
 
 #include <array>
-#include <iostream>
 #include <climits>
 
 #if defined(MW_CALLTRACE_DOXYGEN)
