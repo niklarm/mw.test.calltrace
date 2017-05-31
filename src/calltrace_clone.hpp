@@ -89,6 +89,15 @@ public:
     int errors() const {return _errors;}
     int current_position() const { return _current_position;}
 
+    const calltrace_clone_entry previous() const 
+    {
+        if ((_current_position <= _content.size()) && (_current_position > 0))
+            return _content[_current_position - 1];
+        else
+            return {0, boost::none};
+    }
+    
+    
     bool check(std::uint64_t this_fn)
     {
         if (_current_position >= static_cast<int>(_content.size()))

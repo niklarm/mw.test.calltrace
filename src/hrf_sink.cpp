@@ -118,8 +118,8 @@ struct hrf_sink_t : data_sink_t
     }
     void mismatch(const calltrace_clone & cc, std::uint64_t addr, const boost::optional<mw::debug::address_info> & ai) override
     {
-         *os << "mw.calltrace.error mismatch in calltrace @0x" << std::hex << cc.location()
-             << std::dec << " {[" << fn(addr, ai) << "] != [" << fn(cc.fn().address, cc.fn().info) << "]}" << std::endl;
+         *os << "mw.calltrace.error mismatch in calltrace @0x" << std::hex << cc.location() << std::dec << " at pos " << cc.current_position() 
+             << " {[" << fn(addr, ai) << "] != [" << fn(cc.previous().address, cc.previous().info) << "]}" << std::endl;
     }
     void incomplete(const calltrace_clone & cc, int position) override
     {
