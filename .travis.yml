@@ -1,6 +1,7 @@
 env:
   global:
   - BRANCH_TO_TEST=$TRAVIS_BRANCH
+  - secure: "Fzd0DNiyQUzrsBGFrsXfW6KAbYEgCkPsVDFRLNh8RGZ/19cbQr0vAV9uphch1dQNlvSa7OJT6pysAVlbFrW0FBHgk5BWaWr4ufeB8Z+HixhVPrT37ilkVCMGt1GrABbe1Z3gqToORH7ebVHAMlnV6P5JlA2ffwfjK3bxlOj+l5co/NJx5l7CaelIYzmXnjE/U/xFcuvs98YLECBNAc7/MJiHcLCdi07kckFmAXWihMzUV5ot2V1Bq2Y4XnN4qQyvxJpMbS+/5Sw5iMrn4W5rt4Za7PUbgGvRXkJSdmPzQbx82vU9kbiZtAshMzNw96SNmdOS1uC/qBfq7D21vbuMOx/efdyHp8VzlV8uePjgIq34HUhv+x1nX/Ypr/fUrgLJ5OnU9JNeQjc1ubTyGbbl+mZMu3/5vUTreNkNJPi5X0ycvmGGy+auHBGzgxDzIO2oS5H4KKI5YmDO+mZiOEwpDgvQjmn3Jf+4d/42tG4SWnTej3bh/EpdrV0HYSxVBFZ1ue4bWqONPrpra3sssH1Vgi9OLhalAZGb1I1G0Wse1dMbJ60HkvOQW882DP53gYuK0QeJ4IwlZt7lNo1oBEUi/1zBD9nK4mOHRZ1tEzTwOTnDc2aZGr9yPYol//4RkaTzhNn4zyxayDxIsRZFCDcQdvg8UfnxJpPoBugBT5mSXs8="
   matrix:
   #- ADDRESS_MODEL=32
   - ADDRESS_MODEL=64
@@ -19,6 +20,9 @@ addons:
     - gcc-6
     - g++-6
     - gdb
+    - xsltproc
+    - docbook-xsl
+    - doxygen
 before_script:
     - PROJECT_TO_TEST=`basename $TRAVIS_BUILD_DIR`
     - cd $HOME
@@ -70,3 +74,14 @@ after_success:
     - gem install coveralls-lcov
     # https://github.com/okkez/coveralls-lcov/issues/2
     - coveralls-lcov  --source-encoding=ISO-8859-1 ./coverals/coverage.info
+    - if [ $BRANCH_TO_TEST = "develop" ]; then 
+         cd ../doc; $BOOST/b2 -j4 -sBOOST_ROOT=$BOOST linkflags="-ldl -pthread" -sBOOST_BUILD_PATH=.;
+         git clone https://$GH_TOKEN@github.com/mw-sc/mw-sc.github.io.git -b master $HOME/pages > /dev/null 2>&1 ;
+         cd html; cp -r * $HOME/pages/calltrace;
+         cd $HOME/pages;
+         git config user.email "travis@travis-ci.og";
+         git config user.name "Travis";
+         git commit -am "Updated calltrace documentation"; 
+         git remote add origin-pages https://${GH_TOKEN}@github.com/mw-sc/mw-sc.github.io.git > /dev/null 2>&1;
+         git push --quiet --set-upstream origin-pages master;
+         fi 
