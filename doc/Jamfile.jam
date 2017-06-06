@@ -9,10 +9,6 @@ using doxygen ;
 import xsltproc ;
 import modules ;
 import path ;
-
-local father-path = [ path-constant TOP : .. ] ;
-local strip-path = $(father-path:T)/include ;
-
 local images = [ glob images/*.svg ] ;
 install images      : $(images) : <location>html/images ;
 
@@ -22,7 +18,7 @@ doxygen autodoc
   ../include/mw/test/calltrace.hpp ../include/mw/test/calltrace.h 
 :
   <doxygen:param>EXCLUDE_SYMBOLS=$(exclude-symbols)
-  <doxygen:param>STRIP_FROM_PATH=$(strip-path)
+  <doxygen:param>STRIP_FROM_PATH=../include
   <doxygen:param>PREDEFINED="__cplusplus MW_CALLTRACE_DOXYGEN MW_NO_INSTRUMENT"
   <doxygen:param>ENABLE_PREPROCESSING=YES
   <doxygen:param>ALIASES=$(macro)
