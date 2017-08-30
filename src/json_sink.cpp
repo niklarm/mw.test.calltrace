@@ -76,7 +76,7 @@ struct json_sink_t : data_sink_t
         val.AddMember("file", ai.file, doc.GetAllocator());
         if (ai.full_name)
             val.AddMember("full_name",  boost::replace_all_copy(*ai.full_name, "\\\\", "\\"), doc.GetAllocator());
-        val.AddMember("line", ai.line, doc.GetAllocator());
+        val.AddMember("line", static_cast<int>(ai.line), doc.GetAllocator());
         if (ai.function)
             val.AddMember("function", *ai.function, doc.GetAllocator());
         if (ai.offset)
@@ -175,7 +175,7 @@ struct json_sink_t : data_sink_t
                     auto & i = *c.info;
                     if (i.function)
                         val.AddMember("fn", *i.function, doc.GetAllocator());
-                    val.AddMember("line", i.line, doc.GetAllocator());
+                    val.AddMember("line", static_cast<int>(i.line), doc.GetAllocator());
                     val.AddMember("file", boost::replace_all_copy(i.file, "\\\\", "\\"), doc.GetAllocator());
                     if (i.full_name)
                         val.AddMember("full_name", boost::replace_all_copy(*i.full_name, "\\\\", "\\"), doc.GetAllocator());
@@ -262,7 +262,7 @@ struct json_sink_t : data_sink_t
         val.AddMember("type", "incomplete", doc.GetAllocator());
 
         val.AddMember("position", position, doc.GetAllocator());
-        val.AddMember("size", cc.content().size(), doc.GetAllocator());
+        val.AddMember("size", static_cast<uint64_t>(cc.content().size()), doc.GetAllocator());
 
         rj::Value ct;
         ct.SetObject();
